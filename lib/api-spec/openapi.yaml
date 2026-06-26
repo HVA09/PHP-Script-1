@@ -1,15 +1,18 @@
 openapi: 3.1.0
 info:
-  # Do not change the title, if the title changes, the import paths will be broken
   title: Api
   version: 0.1.0
-  description: API specification
+  description: Affiliate Products API
 servers:
   - url: /api
     description: Base API path
 tags:
   - name: health
     description: Health operations
+  - name: products
+    description: Product operations
+  - name: categories
+    description: Category operations
 paths:
   /healthz:
     get:
@@ -24,6 +27,88 @@ paths:
             application/json:
               schema:
                 $ref: "#/components/schemas/HealthStatus"
+
+  /products:
+    get:
+      operationId: listProducts
+      tags: [products]
+      summary: List products
+      description: Returns all products with optional search and category filter
+      parameters:
+        - name: search
+          in: query
+          required: false
+          schema:
+            type: string
+        - name: category
+          in: query
+          required: false
+          schema:
+            type: string
+        - name: featured
+          in: query
+          required: false
+          schema:
+            type: boolean
+      responses:
+        "200":
+          description: List of products
+          content:
+            application/json:
+              schema:
+                type: array
+                items:
+                  $ref: "#/components/schemas/Product"
+
+  /products/{id}:
+    get:
+      operationId: getProduct
+      tags: [products]
+      summary: Get product by ID
+      parameters:
+        - name: id
+          in: path
+          required: true
+          schema:
+            type: integer
+      responses:
+        "200":
+          description: Product
+          content:
+            application/json:
+              schema:
+                $ref: "#/components/schemas/Product"
+        "404":
+          description: Not found
+
+  /categories:
+    get:
+      operationId: listCategories
+      tags: [categories]
+      summary: List all categories
+      responses:
+        "200":
+          description: List of categories
+          content:
+            application/json:
+              schema:
+                type: array
+                items:
+                  $ref: "#/components/schemas/Category"
+
+  /products/stats:
+    get:
+      operationId: getProductStats
+      tags: [products]
+      summary: Get product statistics
+      responses:
+        "200":
+          description: Product stats
+          content:
+            application/json:
+              schema:
+                $ref: "#/components/schemas/ProductStats"
+
 components:
   schemas:
     HealthStatus:
@@ -34,3 +119,73 @@ components:
       required:
         - status
 
+    Product:
+      type: object
+      required:
+        - id
+        - title
+        - price
+        - category
+        - imageUrl
+        - affiliateUrl
+        - featured
+      properties:
+        id:
+          type: integer
+        title:
+          type: string
+        description:
+          type: ["string", "null"]
+        price:
+          type: number
+        originalPrice:
+          type: ["number", "null"]
+        category:
+          type: string
+        imageUrl:
+          type: string
+        affiliateUrl:
+          type: string
+        rating:
+          type: ["number", "null"]
+        reviewCount:
+          type: ["integer", "null"]
+        badge:
+          type: ["string", "null"]
+        featured:
+          type: boolean
+
+    Category:
+      type: object
+      required:
+        - id
+        - name
+        - slug
+        - productCount
+      properties:
+        id:
+          type: integer
+        name:
+          type: string
+        slug:
+          type: string
+        productCount:
+          type: integer
+        icon:
+          type: ["string", "null"]
+
+    ProductStats:
+      type: object
+      required:
+        - totalProducts
+        - totalCategories
+        - featuredCount
+      properties:
+        totalProducts:
+          type: integer
+        totalCategories:
+          type: integer
+        featuredCount:
+          type: integer
+        avgPrice:
+          type: ["number", "null"]

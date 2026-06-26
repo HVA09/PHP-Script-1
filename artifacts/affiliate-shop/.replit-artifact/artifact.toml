@@ -1,0 +1,31 @@
+kind = "web"
+previewPath = "/"
+title = "Affiliate Products"
+version = "1.0.0"
+id = "artifacts/affiliate-shop"
+router = "path"
+
+[[integratedSkills]]
+name = "react-vite"
+version = "1.0.0"
+
+[[services]]
+name = "web"
+paths = [ "/" ]
+localPort = 18617
+
+[services.development]
+run = "pnpm --filter @workspace/affiliate-shop run dev"
+
+[services.production]
+build = [ "pnpm", "--filter", "@workspace/affiliate-shop", "run", "build" ]
+publicDir = "artifacts/affiliate-shop/dist/public"
+serve = "static"
+
+[[services.production.rewrites]]
+from = "/*"
+to = "/index.html"
+
+[services.env]
+PORT = "18617"
+BASE_PATH = "/"
