@@ -11,6 +11,7 @@ export interface HealthStatus {
 
 export interface Product {
   id: number;
+  slug: string;
   title: string;
   /** @nullable */
   description?: string | null;
@@ -29,6 +30,16 @@ export interface Product {
   featured: boolean;
 }
 
+/**
+ * @nullable
+ */
+export type ProductDetailSpecifications = {[key: string]: string} | null;
+
+export type ProductDetail = Product & {
+  /** @nullable */
+  specifications?: ProductDetailSpecifications;
+};
+
 export interface Category {
   id: number;
   name: string;
@@ -44,6 +55,34 @@ export interface ProductStats {
   featuredCount: number;
   /** @nullable */
   avgPrice?: number | null;
+}
+
+export interface Review {
+  id: number;
+  productId: number;
+  reviewerName: string;
+  /** @nullable */
+  reviewerLocation?: string | null;
+  rating: number;
+  title: string;
+  body: string;
+  verifiedPurchase: boolean;
+  helpfulCount: number;
+  createdAt: string;
+}
+
+export type ReviewsResponseRatingBreakdown = {
+  '1': number;
+  '2': number;
+  '3': number;
+  '4': number;
+  '5': number;
+};
+
+export interface ReviewsResponse {
+  reviews: Review[];
+  totalCount: number;
+  ratingBreakdown: ReviewsResponseRatingBreakdown;
 }
 
 export type ListProductsParams = {

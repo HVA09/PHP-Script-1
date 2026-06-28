@@ -13,13 +13,14 @@ tags:
     description: Product operations
   - name: categories
     description: Category operations
+  - name: reviews
+    description: Review operations
 paths:
   /healthz:
     get:
       operationId: healthCheck
       tags: [health]
       summary: Health check
-      description: Returns server health status
       responses:
         "200":
           description: Healthy
@@ -33,7 +34,6 @@ paths:
       operationId: listProducts
       tags: [products]
       summary: List products
-      description: Returns all products with optional search and category filter
       parameters:
         - name: search
           in: query
@@ -60,6 +60,40 @@ paths:
                 items:
                   $ref: "#/components/schemas/Product"
 
+  /products/stats:
+    get:
+      operationId: getProductStats
+      tags: [products]
+      summary: Get product statistics
+      responses:
+        "200":
+          description: Product stats
+          content:
+            application/json:
+              schema:
+                $ref: "#/components/schemas/ProductStats"
+
+  /products/slug/{slug}:
+    get:
+      operationId: getProductBySlug
+      tags: [products]
+      summary: Get product by SEO-friendly slug
+      parameters:
+        - name: slug
+          in: path
+          required: true
+          schema:
+            type: string
+      responses:
+        "200":
+          description: Product
+          content:
+            application/json:
+              schema:
+                $ref: "#/components/schemas/ProductDetail"
+        "404":
+          description: Not found
+
   /products/{id}:
     get:
       operationId: getProduct
@@ -77,9 +111,28 @@ paths:
           content:
             application/json:
               schema:
-                $ref: "#/components/schemas/Product"
+                $ref: "#/components/schemas/ProductDetail"
         "404":
           description: Not found
+
+  /products/{id}/reviews:
+    get:
+      operationId: listProductReviews
+      tags: [reviews]
+      summary: List reviews for a product
+      parameters:
+        - name: id
+          in: path
+          required: true
+          schema:
+            type: integer
+      responses:
+        "200":
+          description: List of reviews
+          content:
+            application/json:
+              schema:
+                $ref: "#/components/schemas/ReviewsResponse"
 
   /categories:
     get:
@@ -96,19 +149,6 @@ paths:
                 items:
                   $ref: "#/components/schemas/Category"
 
-  /products/stats:
-    get:
-      operationId: getProductStats
-      tags: [products]
-      summary: Get product statistics
-      responses:
-        "200":
-          description: Product stats
-          content:
-            application/json:
-              schema:
-                $ref: "#/components/schemas/ProductStats"
-
 components:
   schemas:
     HealthStatus:
@@ -116,22 +156,16 @@ components:
       properties:
         status:
           type: string
-      required:
-        - status
+      required: [status]
 
     Product:
       type: object
-      required:
-        - id
-        - title
-        - price
-        - category
-        - imageUrl
-        - affiliateUrl
-        - featured
+      required: [id, slug, title, price, category, imageUrl, affiliateUrl, featured]
       properties:
         id:
           type: integer
+        slug:
+          type: string
         title:
           type: string
         description:
@@ -155,13 +189,19 @@ components:
         featured:
           type: boolean
 
+    ProductDetail:
+      allOf:
+        - $ref: "#/components/schemas/Product"
+        - type: object
+          properties:
+            specifications:
+              type: ["object", "null"]
+              additionalProperties:
+                type: string
+
     Category:
       type: object
-      required:
-        - id
-        - name
-        - slug
-        - productCount
+      required: [id, name, slug, productCount]
       properties:
         id:
           type: integer
@@ -176,10 +216,7 @@ components:
 
     ProductStats:
       type: object
-      required:
-        - totalProducts
-        - totalCategories
-        - featuredCount
+      required: [totalProducts, totalCategories, featuredCount]
       properties:
         totalProducts:
           type: integer
@@ -189,3 +226,48 @@ components:
           type: integer
         avgPrice:
           type: ["number", "null"]
+
+    Review:
+      type: object
+      required: [id, productId, reviewerName, rating, title, body, verifiedPurchase, helpfulCount, createdAt]
+      properties:
+        id:
+          type: integer
+        productId:
+          type: integer
+        reviewerName:
+          type: string
+        reviewerLocation:
+          type: ["string", "null"]
+        rating:
+          type: integer
+        title:
+          type: string
+        body:
+          type: string
+        verifiedPurchase:
+          type: boolean
+        helpfulCount:
+          type: integer
+        createdAt:
+          type: string
+
+    ReviewsResponse:
+      type: object
+      required: [reviews, ratingBreakdown, totalCount]
+      properties:
+        reviews:
+          type: array
+          items:
+            $ref: "#/components/schemas/Review"
+        totalCount:
+          type: integer
+        ratingBreakdown:
+          type: object
+          required: ["1", "2", "3", "4", "5"]
+          properties:
+            "1": { type: integer }
+            "2": { type: integer }
+            "3": { type: integer }
+            "4": { type: integer }
+            "5": { type: integer }

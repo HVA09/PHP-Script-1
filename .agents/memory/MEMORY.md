@@ -1,0 +1,1 @@
+- [PostgreSQL schema migration gotchas](pg-migration-gotchas.md) — avoid drizzle-kit push for existing tables with data; use raw SQL via executeSql instead.

@@ -9,7 +9,6 @@ import * as zod from 'zod';
 
 
 /**
- * Returns server health status
  * @summary Health check
  */
 export const HealthCheckResponse = zod.object({
@@ -18,7 +17,6 @@ export const HealthCheckResponse = zod.object({
 
 
 /**
- * Returns all products with optional search and category filter
  * @summary List products
  */
 export const ListProductsQueryParams = zod.object({
@@ -29,6 +27,7 @@ export const ListProductsQueryParams = zod.object({
 
 export const ListProductsResponseItem = zod.object({
   "id": zod.number(),
+  "slug": zod.string(),
   "title": zod.string(),
   "description": zod.string().nullish(),
   "price": zod.number(),
@@ -45,14 +44,26 @@ export const ListProductsResponse = zod.array(ListProductsResponseItem)
 
 
 /**
- * @summary Get product by ID
+ * @summary Get product statistics
  */
-export const GetProductParams = zod.object({
-  "id": zod.coerce.number()
+export const GetProductStatsResponse = zod.object({
+  "totalProducts": zod.number(),
+  "totalCategories": zod.number(),
+  "featuredCount": zod.number(),
+  "avgPrice": zod.number().nullish()
 })
 
-export const GetProductResponse = zod.object({
+
+/**
+ * @summary Get product by SEO-friendly slug
+ */
+export const GetProductBySlugParams = zod.object({
+  "slug": zod.coerce.string()
+})
+
+export const GetProductBySlugResponse = zod.object({
   "id": zod.number(),
+  "slug": zod.string(),
   "title": zod.string(),
   "description": zod.string().nullish(),
   "price": zod.number(),
@@ -64,6 +75,65 @@ export const GetProductResponse = zod.object({
   "reviewCount": zod.number().nullish(),
   "badge": zod.string().nullish(),
   "featured": zod.boolean()
+}).and(zod.object({
+  "specifications": zod.record(zod.string(), zod.string()).nullish()
+}))
+
+
+/**
+ * @summary Get product by ID
+ */
+export const GetProductParams = zod.object({
+  "id": zod.coerce.number()
+})
+
+export const GetProductResponse = zod.object({
+  "id": zod.number(),
+  "slug": zod.string(),
+  "title": zod.string(),
+  "description": zod.string().nullish(),
+  "price": zod.number(),
+  "originalPrice": zod.number().nullish(),
+  "category": zod.string(),
+  "imageUrl": zod.string(),
+  "affiliateUrl": zod.string(),
+  "rating": zod.number().nullish(),
+  "reviewCount": zod.number().nullish(),
+  "badge": zod.string().nullish(),
+  "featured": zod.boolean()
+}).and(zod.object({
+  "specifications": zod.record(zod.string(), zod.string()).nullish()
+}))
+
+
+/**
+ * @summary List reviews for a product
+ */
+export const ListProductReviewsParams = zod.object({
+  "id": zod.coerce.number()
+})
+
+export const ListProductReviewsResponse = zod.object({
+  "reviews": zod.array(zod.object({
+  "id": zod.number(),
+  "productId": zod.number(),
+  "reviewerName": zod.string(),
+  "reviewerLocation": zod.string().nullish(),
+  "rating": zod.number(),
+  "title": zod.string(),
+  "body": zod.string(),
+  "verifiedPurchase": zod.boolean(),
+  "helpfulCount": zod.number(),
+  "createdAt": zod.string()
+})),
+  "totalCount": zod.number(),
+  "ratingBreakdown": zod.object({
+  "1": zod.number(),
+  "2": zod.number(),
+  "3": zod.number(),
+  "4": zod.number(),
+  "5": zod.number()
+})
 })
 
 
@@ -78,16 +148,5 @@ export const ListCategoriesResponseItem = zod.object({
   "icon": zod.string().nullish()
 })
 export const ListCategoriesResponse = zod.array(ListCategoriesResponseItem)
-
-
-/**
- * @summary Get product statistics
- */
-export const GetProductStatsResponse = zod.object({
-  "totalProducts": zod.number(),
-  "totalCategories": zod.number(),
-  "featuredCount": zod.number(),
-  "avgPrice": zod.number().nullish()
-})
 
 

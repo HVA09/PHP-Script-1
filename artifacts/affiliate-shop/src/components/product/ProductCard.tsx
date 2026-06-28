@@ -30,7 +30,7 @@ export function ProductCard({ product }: ProductCardProps) {
   return (
     <Card className="flex flex-col overflow-hidden transition-all duration-300 hover:shadow-xl hover:-translate-y-1 hover:ring-2 hover:ring-primary/30 group">
       <CardHeader className="p-0 relative aspect-[4/3] bg-muted overflow-hidden">
-        <Link href={`/products/${product.id}`} className="absolute inset-0 z-10" aria-label={`View ${product.title}`}>
+        <Link href={`/products/${product.slug}`} className="absolute inset-0 z-10" aria-label={`View ${product.title}`}>
           <span className="sr-only">View {product.title}</span>
         </Link>
         <img
@@ -61,7 +61,7 @@ export function ProductCard({ product }: ProductCardProps) {
             {product.category.replace("-", " ")}
           </span>
           <h3 className="font-display font-semibold text-base leading-snug line-clamp-2 mt-1">
-            <Link href={`/products/${product.id}`} className="hover:text-primary transition-colors">
+            <Link href={`/products/${product.slug}`} className="hover:text-primary transition-colors">
               {product.title}
             </Link>
           </h3>

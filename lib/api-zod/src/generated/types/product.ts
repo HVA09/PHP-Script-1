@@ -8,6 +8,7 @@
 
 export interface Product {
   id: number;
+  slug: string;
   title: string;
   /** @nullable */
   description?: string | null;
