@@ -1,10 +1,11 @@
 import { Link } from "wouter";
+import { Heart, ExternalLink } from "lucide-react";
 import { Badge } from "@/components/ui/badge";
 import { Button } from "@/components/ui/button";
 import { Card, CardContent, CardFooter, CardHeader } from "@/components/ui/card";
 import { StarRating } from "./StarRating";
 import type { Product } from "@workspace/api-client-react";
-import { ArrowRight } from "lucide-react";
+import { useWishlist } from "@/context/WishlistContext";
 
 interface ProductCardProps {
   product: Product;
@@ -20,6 +21,9 @@ const categoryColors: Record<string, string> = {
 };
 
 export function ProductCard({ product }: ProductCardProps) {
+  const { toggle, isWishlisted } = useWishlist();
+  const wishlisted = isWishlisted(product.id);
+
   const discountPct =
     product.originalPrice && product.originalPrice > product.price
       ? Math.round(100 - (product.price / product.originalPrice) * 100)
@@ -53,12 +57,24 @@ export function ProductCard({ product }: ProductCardProps) {
             </span>
           </div>
         )}
+        {/* Wishlist button */}
+        <button
+          onClick={(e) => { e.preventDefault(); e.stopPropagation(); toggle(product.id); }}
+          className={`absolute bottom-3 right-3 z-20 w-8 h-8 rounded-full flex items-center justify-center shadow-md transition-all duration-200 ${
+            wishlisted
+              ? "bg-red-500 text-white scale-110"
+              : "bg-background/90 backdrop-blur-sm text-muted-foreground hover:bg-red-50 hover:text-red-500"
+          }`}
+          aria-label={wishlisted ? "Remove from wishlist" : "Add to wishlist"}
+        >
+          <Heart className={`w-4 h-4 ${wishlisted ? "fill-current" : ""}`} />
+        </button>
       </CardHeader>
 
       <CardContent className="flex-1 p-5">
         <div className="space-y-1 mb-3">
           <span className={`inline-block text-[11px] font-semibold uppercase tracking-wider px-2 py-0.5 rounded-full ${categoryColor}`}>
-            {product.category.replace("-", " ")}
+            {product.category.replace(/-/g, " ")}
           </span>
           <h3 className="font-display font-semibold text-base leading-snug line-clamp-2 mt-1">
             <Link href={`/products/${product.slug}`} className="hover:text-primary transition-colors">
@@ -83,7 +99,7 @@ export function ProductCard({ product }: ProductCardProps) {
         <Button asChild className="w-full font-semibold group/btn" size="lg">
           <a href={product.affiliateUrl} target="_blank" rel="noopener noreferrer">
             Get This Deal
-            <ArrowRight className="w-4 h-4 ml-2 group-hover/btn:translate-x-1 transition-transform" />
+            <ExternalLink className="w-4 h-4 ml-2 opacity-75" />
           </a>
         </Button>
       </CardFooter>

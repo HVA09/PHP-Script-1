@@ -2,7 +2,7 @@ import { useEffect, useState } from "react";
 import { Link, useParams } from "wouter";
 import {
   ArrowLeft, ExternalLink, ShieldCheck, Truck, Star, ChevronRight,
-  ThumbsUp, CheckCircle, AlertCircle
+  ThumbsUp, CheckCircle, AlertCircle, Heart, ChevronLeft, ChevronRight as ChevronRightIcon, ZoomIn
 } from "lucide-react";
 import { Button } from "@/components/ui/button";
 import { Badge } from "@/components/ui/badge";
@@ -10,6 +10,8 @@ import { Skeleton } from "@/components/ui/skeleton";
 import { Tabs, TabsContent, TabsList, TabsTrigger } from "@/components/ui/tabs";
 import { StarRating } from "@/components/product/StarRating";
 import { ProductCard } from "@/components/product/ProductCard";
+import { useWishlist } from "@/context/WishlistContext";
+import { getGalleryImages } from "@/data/productImages";
 import {
   useGetProductBySlug,
   getGetProductBySlugQueryKey,
@@ -42,7 +44,13 @@ function StarBar({ rating, count, total }: { rating: number; count: number; tota
   );
 }
 
-function ReviewCard({ review }: { review: { id: number; reviewerName: string; reviewerLocation?: string | null; rating: number; title: string; body: string; verifiedPurchase: boolean; helpfulCount: number; createdAt: string } }) {
+function ReviewCard({ review }: {
+  review: {
+    id: number; reviewerName: string; reviewerLocation?: string | null;
+    rating: number; title: string; body: string;
+    verifiedPurchase: boolean; helpfulCount: number; createdAt: string;
+  }
+}) {
   return (
     <div className="border rounded-xl p-5 bg-card">
       <div className="flex items-start justify-between gap-3 mb-3">
@@ -74,9 +82,119 @@ function ReviewCard({ review }: { review: { id: number; reviewerName: string; re
   );
 }
 
+function ImageGallery({ images, title }: { images: string[]; title: string }) {
+  const [selected, setSelected] = useState(0);
+  const [lightbox, setLightbox] = useState(false);
+
+  const prev = () => setSelected((i) => (i - 1 + images.length) % images.length);
+  const next = () => setSelected((i) => (i + 1) % images.length);
+
+  return (
+    <>
+      <div className="bg-card border rounded-3xl p-4 md:p-6 sticky top-28 flex flex-col gap-4">
+        {/* Main image */}
+        <div className="relative rounded-2xl overflow-hidden bg-muted flex items-center justify-center min-h-[360px] md:min-h-[440px] group cursor-zoom-in"
+          onClick={() => setLightbox(true)}>
+          <img
+            key={selected}
+            src={images[selected]}
+            alt={`${title} — view ${selected + 1}`}
+            className="max-w-full max-h-[440px] object-contain mix-blend-multiply transition-opacity duration-200"
+          />
+          <button
+            className="absolute inset-0 flex items-center justify-center opacity-0 group-hover:opacity-100 transition-opacity bg-black/5"
+            aria-label="Zoom image"
+          >
+            <ZoomIn className="w-8 h-8 text-white drop-shadow-lg" />
+          </button>
+          {images.length > 1 && (
+            <>
+              <button
+                onClick={(e) => { e.stopPropagation(); prev(); }}
+                className="absolute left-3 top-1/2 -translate-y-1/2 w-9 h-9 rounded-full bg-background/90 shadow flex items-center justify-center hover:bg-background transition-colors z-10"
+              >
+                <ChevronLeft className="w-4 h-4" />
+              </button>
+              <button
+                onClick={(e) => { e.stopPropagation(); next(); }}
+                className="absolute right-3 top-1/2 -translate-y-1/2 w-9 h-9 rounded-full bg-background/90 shadow flex items-center justify-center hover:bg-background transition-colors z-10"
+              >
+                <ChevronRightIcon className="w-4 h-4" />
+              </button>
+            </>
+          )}
+          {/* Dot indicator */}
+          {images.length > 1 && (
+            <div className="absolute bottom-3 left-1/2 -translate-x-1/2 flex items-center gap-1.5">
+              {images.map((_, i) => (
+                <button
+                  key={i}
+                  onClick={(e) => { e.stopPropagation(); setSelected(i); }}
+                  className={`rounded-full transition-all ${i === selected ? "bg-primary w-5 h-2" : "bg-muted-foreground/40 w-2 h-2"}`}
+                />
+              ))}
+            </div>
+          )}
+        </div>
+
+        {/* Thumbnails */}
+        {images.length > 1 && (
+          <div className="flex gap-2 overflow-x-auto pb-1 scrollbar-hide">
+            {images.map((img, i) => (
+              <button
+                key={i}
+                onClick={() => setSelected(i)}
+                className={`shrink-0 w-16 h-16 rounded-xl overflow-hidden border-2 transition-all ${
+                  i === selected ? "border-primary shadow-md scale-105" : "border-transparent opacity-60 hover:opacity-100 hover:border-muted-foreground/40"
+                }`}
+              >
+                <img src={img} alt={`Thumbnail ${i + 1}`} className="w-full h-full object-cover mix-blend-multiply" />
+              </button>
+            ))}
+          </div>
+        )}
+      </div>
+
+      {/* Lightbox */}
+      {lightbox && (
+        <div
+          className="fixed inset-0 z-[100] bg-black/90 flex items-center justify-center p-4"
+          onClick={() => setLightbox(false)}
+        >
+          <button className="absolute top-4 right-4 text-white text-2xl font-bold w-10 h-10 flex items-center justify-center rounded-full bg-white/20 hover:bg-white/30">
+            ×
+          </button>
+          <button
+            className="absolute left-4 top-1/2 -translate-y-1/2 text-white w-12 h-12 flex items-center justify-center rounded-full bg-white/20 hover:bg-white/30"
+            onClick={(e) => { e.stopPropagation(); prev(); }}
+          >
+            <ChevronLeft className="w-6 h-6" />
+          </button>
+          <img
+            src={images[selected]}
+            alt={`${title} — view ${selected + 1}`}
+            className="max-w-full max-h-[90vh] object-contain rounded-2xl"
+            onClick={(e) => e.stopPropagation()}
+          />
+          <button
+            className="absolute right-4 top-1/2 -translate-y-1/2 text-white w-12 h-12 flex items-center justify-center rounded-full bg-white/20 hover:bg-white/30"
+            onClick={(e) => { e.stopPropagation(); next(); }}
+          >
+            <ChevronRightIcon className="w-6 h-6" />
+          </button>
+          <div className="absolute bottom-4 left-1/2 -translate-x-1/2 text-white/60 text-sm">
+            {selected + 1} / {images.length}
+          </div>
+        </div>
+      )}
+    </>
+  );
+}
+
 export default function ProductDetail() {
   const params = useParams();
   const slug = params.slug || "";
+  const { toggle, isWishlisted } = useWishlist();
 
   const { data: product, isLoading: loadingProduct, error } = useGetProductBySlug(slug, {
     query: { enabled: !!slug, queryKey: getGetProductBySlugQueryKey(slug) },
@@ -99,10 +217,13 @@ export default function ProductDetail() {
 
   const filteredRelated = relatedProducts?.filter((p) => p.slug !== slug).slice(0, 4) || [];
 
+  const wishlisted = product ? isWishlisted(product.id) : false;
+
+  const galleryImages = product ? getGalleryImages(product.slug, product.imageUrl) : [];
+
   useEffect(() => {
     if (product?.title) {
       document.title = `${product.title} | DealHub`;
-      // Inject JSON-LD structured data for SEO
       const existing = document.getElementById("product-jsonld");
       if (existing) existing.remove();
       const script = document.createElement("script");
@@ -113,7 +234,7 @@ export default function ProductDetail() {
         "@type": "Product",
         name: product.title,
         description: product.description,
-        image: product.imageUrl,
+        image: galleryImages,
         offers: {
           "@type": "Offer",
           price: product.price,
@@ -131,19 +252,13 @@ export default function ProductDetail() {
       });
       document.head.appendChild(script);
     }
-    return () => {
-      document.getElementById("product-jsonld")?.remove();
-    };
+    return () => { document.getElementById("product-jsonld")?.remove(); };
   }, [product]);
 
-  const savingsPct =
-    product?.originalPrice && product.originalPrice > product.price
-      ? Math.round(100 - (product.price / product.originalPrice) * 100)
-      : null;
-  const savingsAmount =
-    product?.originalPrice && product.originalPrice > product.price
-      ? (product.originalPrice - product.price).toFixed(2)
-      : null;
+  const savingsPct = product?.originalPrice && product.originalPrice > product.price
+    ? Math.round(100 - (product.price / product.originalPrice) * 100) : null;
+  const savingsAmount = product?.originalPrice && product.originalPrice > product.price
+    ? (product.originalPrice - product.price).toFixed(2) : null;
 
   const categoryLabel = product ? (categoryLabels[product.category] || product.category) : "";
   const breakdown = reviewsData?.ratingBreakdown;
@@ -157,9 +272,7 @@ export default function ProductDetail() {
         </div>
         <h1 className="text-2xl font-bold mb-3">Product Not Found</h1>
         <p className="text-muted-foreground mb-8">This product doesn't exist or may have been removed.</p>
-        <Button asChild>
-          <Link href="/products">Browse All Deals</Link>
-        </Button>
+        <Button asChild><Link href="/products">Browse All Deals</Link></Button>
       </div>
     );
   }
@@ -176,7 +289,7 @@ export default function ProductDetail() {
             {product && (
               <>
                 <ChevronRight className="w-3.5 h-3.5 shrink-0" />
-                <Link href={`/products?category=${product.category}`} className="hover:text-foreground transition-colors">
+                <Link href={`/categories#${product.category}`} className="hover:text-foreground transition-colors">
                   {categoryLabel}
                 </Link>
                 <ChevronRight className="w-3.5 h-3.5 shrink-0" />
@@ -188,7 +301,6 @@ export default function ProductDetail() {
       </div>
 
       <div className="container mx-auto px-4 py-8 max-w-7xl">
-        {/* Back link */}
         <Link href="/products" className="inline-flex items-center text-sm font-medium text-muted-foreground hover:text-foreground mb-8 group">
           <ArrowLeft className="w-4 h-4 mr-2 group-hover:-translate-x-1 transition-transform" />
           Back to all deals
@@ -208,31 +320,27 @@ export default function ProductDetail() {
             </div>
           </div>
         ) : (
-          <div className="grid md:grid-cols-2 gap-12 items-start mb-16">
-            {/* Image */}
-            <div className="bg-card border rounded-3xl p-8 relative sticky top-28 flex items-center justify-center min-h-[420px]">
+          <div className="grid md:grid-cols-2 gap-10 items-start mb-16">
+            {/* Gallery */}
+            <div className="relative">
               {product.badge && (
-                <Badge className="absolute top-6 left-6 bg-primary text-primary-foreground border-transparent px-3 py-1 font-semibold text-sm">
+                <Badge className="absolute top-8 left-8 z-10 bg-primary text-primary-foreground border-transparent px-3 py-1 font-semibold text-sm">
                   {product.badge}
                 </Badge>
               )}
               {savingsPct !== null && (
-                <span className="absolute top-6 right-6 bg-green-500 text-white text-sm font-bold px-3 py-1 rounded-lg shadow">
+                <span className="absolute top-8 right-8 z-10 bg-green-500 text-white text-sm font-bold px-3 py-1 rounded-lg shadow">
                   {savingsPct}% OFF
                 </span>
               )}
-              <img
-                src={product.imageUrl}
-                alt={product.title}
-                className="max-w-full max-h-[480px] object-contain mix-blend-multiply"
-              />
+              <ImageGallery images={galleryImages} title={product.title} />
             </div>
 
             {/* Info */}
             <div className="flex flex-col gap-5">
               <div>
                 <Link
-                  href={`/products?category=${product.category}`}
+                  href={`/categories#${product.category}`}
                   className="text-primary font-semibold text-xs uppercase tracking-widest hover:underline"
                 >
                   {categoryLabel}
@@ -244,8 +352,8 @@ export default function ProductDetail() {
 
               <div className="flex items-center gap-3 flex-wrap">
                 <StarRating rating={product.rating} reviewCount={product.reviewCount} className="scale-110 origin-left" />
-                {reviewsData && reviewsData.totalCount > 0 && (
-                  <span className="text-sm text-muted-foreground border-l pl-3">{reviewsData.totalCount} reviews</span>
+                {totalReviews > 0 && (
+                  <span className="text-sm text-muted-foreground border-l pl-3">{totalReviews} reviews</span>
                 )}
               </div>
 
@@ -264,14 +372,25 @@ export default function ProductDetail() {
                 )}
               </div>
 
-              {/* Desktop CTA */}
+              {/* Desktop CTA + Wishlist */}
               <div className="hidden md:flex flex-col gap-2">
-                <Button asChild size="lg" className="w-full h-14 text-base font-bold shadow-xl group">
-                  <a href={product.affiliateUrl} target="_blank" rel="noopener noreferrer">
-                    Buy Now at Best Price
-                    <ExternalLink className="w-5 h-5 ml-2 opacity-80 group-hover:translate-x-0.5 group-hover:-translate-y-0.5 transition-transform" />
-                  </a>
-                </Button>
+                <div className="flex gap-3">
+                  <Button asChild size="lg" className="flex-1 h-14 text-base font-bold shadow-xl group">
+                    <a href={product.affiliateUrl} target="_blank" rel="noopener noreferrer">
+                      Buy Now at Best Price
+                      <ExternalLink className="w-5 h-5 ml-2 opacity-80 group-hover:translate-x-0.5 group-hover:-translate-y-0.5 transition-transform" />
+                    </a>
+                  </Button>
+                  <Button
+                    variant="outline"
+                    size="lg"
+                    className={`h-14 w-14 shrink-0 ${wishlisted ? "bg-red-50 border-red-300 text-red-500 hover:bg-red-100" : ""}`}
+                    onClick={() => toggle(product.id)}
+                    aria-label={wishlisted ? "Remove from wishlist" : "Save to wishlist"}
+                  >
+                    <Heart className={`w-5 h-5 ${wishlisted ? "fill-current" : ""}`} />
+                  </Button>
+                </div>
                 <p className="text-xs text-muted-foreground text-center">
                   Affiliate link — we may earn a small commission at no extra cost to you.
                 </p>
@@ -291,7 +410,6 @@ export default function ProductDetail() {
                 ))}
               </div>
 
-              {/* Quick description */}
               {product.description && (
                 <div className="text-sm text-muted-foreground leading-relaxed">
                   {product.description}
@@ -301,22 +419,21 @@ export default function ProductDetail() {
           </div>
         )}
 
-        {/* Tabs: Description | Specifications | Reviews */}
+        {/* Tabs */}
         {product && (
           <Tabs defaultValue="specifications" className="mb-16">
-            <TabsList className="w-full justify-start border-b rounded-none bg-transparent h-auto p-0 gap-0 mb-8">
+            <TabsList className="w-full justify-start border-b rounded-none bg-transparent h-auto p-0 gap-0 mb-8 overflow-x-auto">
               {["specifications", "description", "reviews"].map((tab) => (
                 <TabsTrigger
                   key={tab}
                   value={tab}
-                  className="rounded-none border-b-2 border-transparent data-[state=active]:border-primary data-[state=active]:bg-transparent data-[state=active]:shadow-none capitalize px-5 py-3 font-semibold text-muted-foreground data-[state=active]:text-foreground"
+                  className="rounded-none border-b-2 border-transparent data-[state=active]:border-primary data-[state=active]:bg-transparent data-[state=active]:shadow-none capitalize px-5 py-3 font-semibold text-muted-foreground data-[state=active]:text-foreground shrink-0"
                 >
                   {tab === "reviews" ? `Reviews (${totalReviews})` : tab.charAt(0).toUpperCase() + tab.slice(1)}
                 </TabsTrigger>
               ))}
             </TabsList>
 
-            {/* Specifications Tab */}
             <TabsContent value="specifications">
               {product.specifications && Object.keys(product.specifications).length > 0 ? (
                 <div className="bg-card border rounded-2xl overflow-hidden">
@@ -336,7 +453,6 @@ export default function ProductDetail() {
               )}
             </TabsContent>
 
-            {/* Description Tab */}
             <TabsContent value="description">
               <div className="max-w-3xl">
                 {product.description ? (
@@ -352,16 +468,15 @@ export default function ProductDetail() {
                   <p className="text-muted-foreground">No description available.</p>
                 )}
 
-                {/* Why buy from DealHub */}
                 <div className="mt-10 bg-muted/40 rounded-2xl border p-6">
                   <h3 className="font-display font-bold mb-5 text-sm uppercase tracking-wider text-muted-foreground">
                     Why buy from DealHub?
                   </h3>
                   <div className="grid sm:grid-cols-3 gap-4">
                     {[
-                      { icon: Star, label: "Curated Picks", desc: "Every product is hand-selected by our editorial team." },
-                      { icon: ShieldCheck, label: "Best Price Guarantee", desc: "We only list the most competitive prices available online." },
-                      { icon: ExternalLink, label: "Safe Affiliate Links", desc: "All affiliate links are verified, spam-free, and go directly to the retailer." },
+                      { icon: Star, label: "Curated Picks", desc: "Every product hand-selected by our editorial team." },
+                      { icon: ShieldCheck, label: "Best Price Guarantee", desc: "We only list the most competitive prices available." },
+                      { icon: ExternalLink, label: "Safe Affiliate Links", desc: "All links verified, spam-free, direct to the retailer." },
                     ].map(({ icon: Icon, label, desc }) => (
                       <div key={label} className="flex flex-col items-start gap-2">
                         <div className="w-9 h-9 rounded-full bg-primary/10 text-primary flex items-center justify-center">
@@ -376,7 +491,6 @@ export default function ProductDetail() {
               </div>
             </TabsContent>
 
-            {/* Reviews Tab */}
             <TabsContent value="reviews">
               {loadingReviews ? (
                 <div className="space-y-4">
@@ -384,7 +498,6 @@ export default function ProductDetail() {
                 </div>
               ) : reviewsData && reviewsData.reviews.length > 0 ? (
                 <div className="grid lg:grid-cols-[280px_1fr] gap-8 items-start">
-                  {/* Rating Summary */}
                   <div className="bg-card border rounded-2xl p-6 sticky top-28">
                     <div className="text-center mb-6">
                       <div className="text-6xl font-display font-bold mb-1">{product.rating?.toFixed(1)}</div>
@@ -395,28 +508,19 @@ export default function ProductDetail() {
                       </div>
                       <p className="text-sm text-muted-foreground">{totalReviews.toLocaleString()} reviews</p>
                     </div>
-
                     {breakdown && (
                       <div className="space-y-2">
                         {[5, 4, 3, 2, 1].map((r) => (
-                          <StarBar
-                            key={r}
-                            rating={r}
-                            count={breakdown[String(r) as keyof typeof breakdown]}
-                            total={totalReviews}
-                          />
+                          <StarBar key={r} rating={r} count={breakdown[String(r) as keyof typeof breakdown]} total={totalReviews} />
                         ))}
                       </div>
                     )}
-
                     <div className="mt-6 pt-5 border-t">
                       <p className="text-xs text-muted-foreground text-center">
                         {reviewsData.reviews.filter((r) => r.verifiedPurchase).length} verified purchase reviews
                       </p>
                     </div>
                   </div>
-
-                  {/* Review List */}
                   <div className="space-y-4">
                     {reviewsData.reviews.map((review) => (
                       <ReviewCard key={review.id} review={review} />
@@ -426,7 +530,7 @@ export default function ProductDetail() {
               ) : (
                 <div className="text-center py-16 text-muted-foreground">
                   <Star className="w-10 h-10 mx-auto mb-3 opacity-30" />
-                  <p className="font-medium">No reviews yet for this product.</p>
+                  <p className="font-medium">No reviews yet.</p>
                 </div>
               )}
             </TabsContent>
@@ -457,15 +561,25 @@ export default function ProductDetail() {
         )}
       </div>
 
-      {/* Mobile sticky buy button */}
+      {/* Mobile sticky bar */}
       {product && (
         <div className="fixed bottom-0 left-0 right-0 z-50 md:hidden bg-background/95 backdrop-blur border-t shadow-2xl p-4">
-          <Button asChild size="lg" className="w-full h-14 text-base font-bold group">
-            <a href={product.affiliateUrl} target="_blank" rel="noopener noreferrer">
-              Buy Now — ${product.price.toFixed(2)}
-              <ExternalLink className="w-4 h-4 ml-2 opacity-80" />
-            </a>
-          </Button>
+          <div className="flex gap-3">
+            <Button
+              variant="outline"
+              size="lg"
+              className={`h-14 w-14 shrink-0 ${wishlisted ? "bg-red-50 border-red-300 text-red-500" : ""}`}
+              onClick={() => toggle(product.id)}
+            >
+              <Heart className={`w-5 h-5 ${wishlisted ? "fill-current" : ""}`} />
+            </Button>
+            <Button asChild size="lg" className="flex-1 h-14 text-base font-bold group">
+              <a href={product.affiliateUrl} target="_blank" rel="noopener noreferrer">
+                Buy Now — ${product.price.toFixed(2)}
+                <ExternalLink className="w-4 h-4 ml-2 opacity-80" />
+              </a>
+            </Button>
+          </div>
           <p className="text-[10px] text-muted-foreground text-center mt-1.5">
             Affiliate link — we may earn a commission at no extra cost to you
           </p>
