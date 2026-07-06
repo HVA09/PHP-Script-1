@@ -1,6 +1,15 @@
-import { useEffect } from "react";
 import { Link } from "wouter";
-import { ChevronRight, Laptop, Shirt, Home, Dumbbell, Sparkles, BookOpen, ArrowRight, TrendingUp } from "lucide-react";
+import {
+  ChevronRight,
+  Laptop,
+  Shirt,
+  Home,
+  Dumbbell,
+  Sparkles,
+  BookOpen,
+  ArrowRight,
+  TrendingUp,
+} from "lucide-react";
 import { Button } from "@/components/ui/button";
 import { Badge } from "@/components/ui/badge";
 import { Skeleton } from "@/components/ui/skeleton";
@@ -12,70 +21,95 @@ import {
   getListProductsQueryKey,
 } from "@workspace/api-client-react";
 
-const categoryMeta: Record<string, {
-  icon: React.ComponentType<{ className?: string }>;
-  image: string;
-  description: string;
-  gradient: string;
-  accent: string;
-}> = {
+const categoryMeta: Record<
+  string,
+  {
+    icon: React.ComponentType<{ className?: string }>;
+    image: string;
+    description: string;
+    gradient: string;
+    accent: string;
+  }
+> = {
   electronics: {
     icon: Laptop,
-    image: "https://images.unsplash.com/photo-1518770660439-4636190af475?w=800&q=80",
-    description: "Headphones, TVs, laptops, tablets and cutting-edge gadgets at unbeatable prices.",
+    image:
+      "https://images.unsplash.com/photo-1518770660439-4636190af475?w=800&q=80",
+    description:
+      "Headphones, TVs, laptops, tablets and cutting-edge gadgets at unbeatable prices.",
     gradient: "from-blue-600 to-indigo-700",
     accent: "bg-blue-100 text-blue-700",
   },
   fashion: {
     icon: Shirt,
-    image: "https://images.unsplash.com/photo-1445205170230-053b83016050?w=800&q=80",
-    description: "Premium sneakers, jeans, jackets and accessories from the world's top brands.",
+    image:
+      "https://images.unsplash.com/photo-1445205170230-053b83016050?w=800&q=80",
+    description:
+      "Premium sneakers, jeans, jackets and accessories from the world's top brands.",
     gradient: "from-pink-500 to-rose-600",
     accent: "bg-pink-100 text-pink-700",
   },
   "home-kitchen": {
     icon: Home,
-    image: "https://images.unsplash.com/photo-1556909114-f6e7ad7d3136?w=800&q=80",
-    description: "Everything for your kitchen and home — from Instant Pots to Le Creuset Dutch ovens.",
+    image:
+      "https://images.unsplash.com/photo-1556909114-f6e7ad7d3136?w=800&q=80",
+    description:
+      "Everything for your kitchen and home — from Instant Pots to Le Creuset Dutch ovens.",
     gradient: "from-green-500 to-emerald-700",
     accent: "bg-green-100 text-green-700",
   },
   "sports-outdoors": {
     icon: Dumbbell,
-    image: "https://images.unsplash.com/photo-1571019613454-1cb2f99b2d8b?w=800&q=80",
-    description: "GPS watches, resistance bands, water bottles and gear for every workout and adventure.",
+    image:
+      "https://images.unsplash.com/photo-1571019613454-1cb2f99b2d8b?w=800&q=80",
+    description:
+      "GPS watches, resistance bands, water bottles and gear for every workout and adventure.",
     gradient: "from-orange-500 to-amber-600",
     accent: "bg-orange-100 text-orange-700",
   },
   "beauty-health": {
     icon: Sparkles,
-    image: "https://images.unsplash.com/photo-1556228720-195a672e8a03?w=800&q=80",
-    description: "Dermatologist-approved skincare, electric toothbrushes and wellness essentials.",
+    image:
+      "https://images.unsplash.com/photo-1556228720-195a672e8a03?w=800&q=80",
+    description:
+      "Dermatologist-approved skincare, electric toothbrushes and wellness essentials.",
     gradient: "from-purple-500 to-violet-700",
     accent: "bg-purple-100 text-purple-700",
   },
   books: {
     icon: BookOpen,
-    image: "https://images.unsplash.com/photo-1544947950-fa07a98d237f?w=800&q=80",
-    description: "Bestselling self-help, finance and productivity books to sharpen your mind.",
+    image:
+      "https://images.unsplash.com/photo-1544947950-fa07a98d237f?w=800&q=80",
+    description:
+      "Bestselling self-help, finance and productivity books to sharpen your mind.",
     gradient: "from-amber-500 to-yellow-600",
     accent: "bg-amber-100 text-amber-700",
   },
 };
 
-function CategorySection({ slug, name, productCount }: { slug: string; name: string; productCount: number }) {
+function CategorySection({
+  slug,
+  name,
+  productCount,
+}: {
+  slug: string;
+  name: string;
+  productCount: number;
+}) {
   const meta = categoryMeta[slug];
   const Icon = meta?.icon ?? Sparkles;
 
   const { data: products, isLoading } = useListProducts(
     { category: slug },
-    { query: { queryKey: getListProductsQueryKey({ category: slug }) } }
+    { query: { queryKey: getListProductsQueryKey({ category: slug }) } },
   );
 
   return (
     <section id={slug} className="scroll-mt-24">
       {/* Category header */}
-      <div className={`relative overflow-hidden rounded-2xl mb-8 bg-gradient-to-r ${meta?.gradient ?? "from-primary to-primary/80"}`}>
+      <div
+        className={`relative overflow-hidden rounded-2xl mb-8 bg-gradient-to-r ${meta?.gradient ?? "from-primary to-primary/80"}`}
+      >
         {meta?.image && (
           <img
             src={meta.image}
@@ -89,8 +123,12 @@ function CategorySection({ slug, name, productCount }: { slug: string; name: str
               <Icon className="w-7 h-7" />
             </div>
             <div>
-              <h2 className="font-display text-2xl md:text-3xl font-bold text-white tracking-tight">{name}</h2>
-              <p className="text-white/75 text-sm mt-1 max-w-sm">{meta?.description}</p>
+              <h2 className="font-display text-2xl md:text-3xl font-bold text-white tracking-tight">
+                {name}
+              </h2>
+              <p className="text-white/75 text-sm mt-1 max-w-sm">
+                {meta?.description}
+              </p>
             </div>
           </div>
           <Button
@@ -150,7 +188,9 @@ export default function Categories() {
       <div className="border-b bg-muted/30">
         <div className="container mx-auto px-4 py-3">
           <nav className="flex items-center gap-1.5 text-sm text-muted-foreground">
-            <Link href="/" className="hover:text-foreground transition-colors">Home</Link>
+            <Link href="/" className="hover:text-foreground transition-colors">
+              Home
+            </Link>
             <ChevronRight className="w-3.5 h-3.5" />
             <span className="text-foreground">All Categories</span>
           </nav>
@@ -167,7 +207,8 @@ export default function Categories() {
             Shop by Category
           </h1>
           <p className="text-accent-foreground/70 max-w-xl mx-auto">
-            Hand-curated products across every lifestyle. Discover the best deals in electronics, fashion, home goods, and more.
+            Hand-curated products across every lifestyle. Discover the best
+            deals in electronics, fashion, home goods, and more.
           </p>
         </div>
       </section>
@@ -177,7 +218,12 @@ export default function Categories() {
         <div className="container mx-auto px-4">
           <div className="flex items-center gap-1 overflow-x-auto py-3 scrollbar-hide">
             {isLoading
-              ? [1, 2, 3, 4, 5, 6].map((i) => <Skeleton key={i} className="h-8 w-28 rounded-full shrink-0" />)
+              ? [1, 2, 3, 4, 5, 6].map((i) => (
+                  <Skeleton
+                    key={i}
+                    className="h-8 w-28 rounded-full shrink-0"
+                  />
+                ))
               : categories?.map((cat) => {
                   const meta = categoryMeta[cat.slug];
                   const Icon = meta?.icon ?? Sparkles;
@@ -191,7 +237,10 @@ export default function Categories() {
                     >
                       <Icon className="w-3.5 h-3.5" />
                       {cat.name}
-                      <Badge variant="outline" className="ml-1 h-4 text-[10px] px-1 border-current opacity-70">
+                      <Badge
+                        variant="outline"
+                        className="ml-1 h-4 text-[10px] px-1 border-current opacity-70"
+                      >
                         {cat.productCount}
                       </Badge>
                     </a>
@@ -208,12 +257,19 @@ export default function Categories() {
               <div key={i}>
                 <Skeleton className="h-40 rounded-2xl mb-8" />
                 <div className="grid grid-cols-2 lg:grid-cols-4 gap-6">
-                  {[1, 2, 3, 4].map((j) => <Skeleton key={j} className="aspect-[4/3] rounded-xl" />)}
+                  {[1, 2, 3, 4].map((j) => (
+                    <Skeleton key={j} className="aspect-[4/3] rounded-xl" />
+                  ))}
                 </div>
               </div>
             ))
           : categories?.map((cat) => (
-              <CategorySection key={cat.id} slug={cat.slug} name={cat.name} productCount={cat.productCount} />
+              <CategorySection
+                key={cat.id}
+                slug={cat.slug}
+                name={cat.name}
+                productCount={cat.productCount}
+              />
             ))}
       </div>
     </div>

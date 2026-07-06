@@ -4,13 +4,25 @@ import { Search as SearchIcon, Filter, X } from "lucide-react";
 import { Input } from "@/components/ui/input";
 import { Button } from "@/components/ui/button";
 import { Badge } from "@/components/ui/badge";
-import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from "@/components/ui/select";
-import { Sheet, SheetContent, SheetHeader, SheetTitle, SheetTrigger } from "@/components/ui/sheet";
+import {
+  Select,
+  SelectContent,
+  SelectItem,
+  SelectTrigger,
+  SelectValue,
+} from "@/components/ui/select";
+import {
+  Sheet,
+  SheetContent,
+  SheetHeader,
+  SheetTitle,
+  SheetTrigger,
+} from "@/components/ui/sheet";
 import { ProductCard } from "@/components/product/ProductCard";
 import { ProductGridSkeleton } from "@/components/product/ProductGridSkeleton";
 import {
   useListProducts,
-  getListProductsQueryKey,
+  getListProductsQuSamsung 65eryKey,
   useListCategories,
   getListCategoriesQueryKey,
 } from "@workspace/api-client-react";
@@ -19,7 +31,10 @@ export default function Products() {
   const [, setLocation] = useLocation();
   const searchString = useSearch();
 
-  const searchParams = useMemo(() => new URLSearchParams(searchString), [searchString]);
+  const searchParams = useMemo(
+    () => new URLSearchParams(searchString),
+    [searchString],
+  );
   const querySearch = searchParams.get("search") || "";
   const queryCategory = searchParams.get("category") || "";
   const queryFeatured = searchParams.get("featured") === "true";
@@ -53,16 +68,19 @@ export default function Products() {
           featured: queryFeatured || undefined,
         }),
       },
-    }
+    },
   );
 
   const sortedProducts = useMemo(() => {
     if (!products) return [];
     return [...products].sort((a, b) => {
       switch (querySort) {
-        case "price-asc": return a.price - b.price;
-        case "price-desc": return b.price - a.price;
-        case "rating": return (b.rating || 0) - (a.rating || 0);
+        case "price-asc":
+          return a.price - b.price;
+        case "price-desc":
+          return b.price - a.price;
+        case "rating":
+          return (b.rating || 0) - (a.rating || 0);
         default:
           if (a.featured && !b.featured) return -1;
           if (!a.featured && b.featured) return 1;
@@ -86,16 +104,22 @@ export default function Products() {
     updateUrl({ search: searchInput || null });
   };
 
-  const activeFilterCount = (querySearch ? 1 : 0) + (queryCategory ? 1 : 0) + (queryFeatured ? 1 : 0);
+  const activeFilterCount =
+    (querySearch ? 1 : 0) + (queryCategory ? 1 : 0) + (queryFeatured ? 1 : 0);
 
   const FilterSidebar = () => (
     <div className="space-y-8">
       <div>
-        <h3 className="font-semibold mb-4 text-xs uppercase tracking-wider text-muted-foreground">Categories</h3>
+        <h3 className="font-semibold mb-4 text-xs uppercase tracking-wider text-muted-foreground">
+          Categories
+        </h3>
         {loadingCategories ? (
           <div className="space-y-2">
             {Array.from({ length: 5 }).map((_, i) => (
-              <div key={i} className="h-6 w-3/4 bg-muted rounded animate-pulse" />
+              <div
+                key={i}
+                className="h-6 w-3/4 bg-muted rounded animate-pulse"
+              />
             ))}
           </div>
         ) : (
@@ -104,7 +128,9 @@ export default function Products() {
               <button
                 onClick={() => updateUrl({ category: null })}
                 className={`text-sm text-left w-full px-2 py-1.5 rounded-md transition-colors ${
-                  !queryCategory ? "bg-primary/10 text-primary font-semibold" : "hover:bg-muted text-muted-foreground hover:text-foreground"
+                  !queryCategory
+                    ? "bg-primary/10 text-primary font-semibold"
+                    : "hover:bg-muted text-muted-foreground hover:text-foreground"
                 }`}
               >
                 All Categories
@@ -121,7 +147,9 @@ export default function Products() {
                   }`}
                 >
                   <span>{cat.name}</span>
-                  <span className="text-xs bg-muted text-muted-foreground px-1.5 py-0.5 rounded-sm">{cat.productCount}</span>
+                  <span className="text-xs bg-muted text-muted-foreground px-1.5 py-0.5 rounded-sm">
+                    {cat.productCount}
+                  </span>
                 </button>
               </li>
             ))}
@@ -130,15 +158,23 @@ export default function Products() {
       </div>
 
       <div>
-        <h3 className="font-semibold mb-4 text-xs uppercase tracking-wider text-muted-foreground">Status</h3>
+        <h3 className="font-semibold mb-4 text-xs uppercase tracking-wider text-muted-foreground">
+          Status
+        </h3>
         <button
           onClick={() => updateUrl({ featured: queryFeatured ? null : "true" })}
           className={`text-sm text-left w-full px-2 py-1.5 rounded-md transition-colors flex items-center gap-2 ${
-            queryFeatured ? "bg-primary/10 text-primary font-semibold" : "hover:bg-muted text-muted-foreground hover:text-foreground"
+            queryFeatured
+              ? "bg-primary/10 text-primary font-semibold"
+              : "hover:bg-muted text-muted-foreground hover:text-foreground"
           }`}
         >
-          <div className={`w-4 h-4 border rounded-sm flex items-center justify-center shrink-0 ${queryFeatured ? "bg-primary border-primary" : "border-muted-foreground"}`}>
-            {queryFeatured && <div className="w-2 h-2 bg-primary-foreground rounded-sm" />}
+          <div
+            className={`w-4 h-4 border rounded-sm flex items-center justify-center shrink-0 ${queryFeatured ? "bg-primary border-primary" : "border-muted-foreground"}`}
+          >
+            {queryFeatured && (
+              <div className="w-2 h-2 bg-primary-foreground rounded-sm" />
+            )}
           </div>
           Featured Deals Only
         </button>
@@ -151,9 +187,13 @@ export default function Products() {
       {/* Page Hero Strip */}
       <div className="bg-accent text-accent-foreground py-12 px-4">
         <div className="container mx-auto">
-          <h1 className="font-display text-4xl md:text-5xl font-bold tracking-tight mb-2">All Deals</h1>
+          <h1 className="font-display text-4xl md:text-5xl font-bold tracking-tight mb-2">
+            All Deals
+          </h1>
           <p className="text-accent-foreground/70 mb-6 text-sm">
-            {products && !loadingProducts ? `${products.length} products available` : "Discover the best products"}
+            {products && !loadingProducts
+              ? `${products.length} products available`
+              : "Discover the best products"}
           </p>
           <form onSubmit={handleSearchSubmit} className="relative max-w-xl">
             <SearchIcon className="absolute left-3.5 top-1/2 -translate-y-1/2 h-5 w-5 text-muted-foreground" />
@@ -164,7 +204,10 @@ export default function Products() {
               value={searchInput}
               onChange={(e) => setSearchInput(e.target.value)}
             />
-            <Button type="submit" className="absolute right-2 top-1/2 -translate-y-1/2 font-semibold">
+            <Button
+              type="submit"
+              className="absolute right-2 top-1/2 -translate-y-1/2 font-semibold"
+            >
               Search
             </Button>
           </form>
@@ -175,26 +218,49 @@ export default function Products() {
         {/* Active Filters */}
         {activeFilterCount > 0 && (
           <div className="flex flex-wrap gap-2 items-center mb-6">
-            <span className="text-sm text-muted-foreground">Active filters:</span>
+            <span className="text-sm text-muted-foreground">
+              Active filters:
+            </span>
             {querySearch && (
               <Badge className="gap-1 px-2.5 py-1 bg-primary text-primary-foreground border-transparent">
                 Search: {querySearch}
-                <button onClick={() => updateUrl({ search: null })} className="hover:opacity-70"><X className="w-3 h-3" /></button>
+                <button
+                  onClick={() => updateUrl({ search: null })}
+                  className="hover:opacity-70"
+                >
+                  <X className="w-3 h-3" />
+                </button>
               </Badge>
             )}
             {queryCategory && (
               <Badge className="gap-1 px-2.5 py-1 bg-primary text-primary-foreground border-transparent">
-                {categories?.find((c) => c.slug === queryCategory)?.name || queryCategory}
-                <button onClick={() => updateUrl({ category: null })} className="hover:opacity-70"><X className="w-3 h-3" /></button>
+                {categories?.find((c) => c.slug === queryCategory)?.name ||
+                  queryCategory}
+                <button
+                  onClick={() => updateUrl({ category: null })}
+                  className="hover:opacity-70"
+                >
+                  <X className="w-3 h-3" />
+                </button>
               </Badge>
             )}
             {queryFeatured && (
               <Badge className="gap-1 px-2.5 py-1 bg-primary text-primary-foreground border-transparent">
                 Featured
-                <button onClick={() => updateUrl({ featured: null })} className="hover:opacity-70"><X className="w-3 h-3" /></button>
+                <button
+                  onClick={() => updateUrl({ featured: null })}
+                  className="hover:opacity-70"
+                >
+                  <X className="w-3 h-3" />
+                </button>
               </Badge>
             )}
-            <Button variant="ghost" size="sm" onClick={() => setLocation("/products")} className="h-6 px-2 text-xs text-muted-foreground">
+            <Button
+              variant="ghost"
+              size="sm"
+              onClick={() => setLocation("/products")}
+              className="h-6 px-2 text-xs text-muted-foreground"
+            >
               Clear all
             </Button>
           </div>
@@ -232,20 +298,31 @@ export default function Products() {
                 </Sheet>
 
                 <p className="text-sm text-muted-foreground">
-                  {loadingProducts ? "Loading..." : `Showing ${sortedProducts.length} result${sortedProducts.length !== 1 ? "s" : ""}`}
+                  {loadingProducts
+                    ? "Loading..."
+                    : `Showing ${sortedProducts.length} result${sortedProducts.length !== 1 ? "s" : ""}`}
                 </p>
               </div>
 
               <div className="flex items-center gap-2 w-full sm:w-auto self-end">
-                <span className="text-sm font-medium text-muted-foreground whitespace-nowrap">Sort:</span>
-                <Select value={querySort} onValueChange={(val) => updateUrl({ sort: val })}>
+                <span className="text-sm font-medium text-muted-foreground whitespace-nowrap">
+                  Sort:
+                </span>
+                <Select
+                  value={querySort}
+                  onValueChange={(val) => updateUrl({ sort: val })}
+                >
                   <SelectTrigger className="w-full sm:w-[160px] bg-background">
                     <SelectValue placeholder="Sort order" />
                   </SelectTrigger>
                   <SelectContent>
                     <SelectItem value="featured">Featured First</SelectItem>
-                    <SelectItem value="price-asc">Price: Low to High</SelectItem>
-                    <SelectItem value="price-desc">Price: High to Low</SelectItem>
+                    <SelectItem value="price-asc">
+                      Price: Low to High
+                    </SelectItem>
+                    <SelectItem value="price-desc">
+                      Price: High to Low
+                    </SelectItem>
                     <SelectItem value="rating">Top Rated</SelectItem>
                   </SelectContent>
                 </Select>
@@ -262,9 +339,12 @@ export default function Products() {
                 </div>
                 <h2 className="text-xl font-bold mb-2">No products found</h2>
                 <p className="text-muted-foreground max-w-md mb-6 text-sm">
-                  We couldn't find any products matching your current filters. Try adjusting your search or category.
+                  We couldn't find any products matching your current filters.
+                  Try adjusting your search or category.
                 </p>
-                <Button onClick={() => setLocation("/products")}>Clear all filters</Button>
+                <Button onClick={() => setLocation("/products")}>
+                  Clear all filters
+                </Button>
               </div>
             ) : (
               <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 gap-6">
