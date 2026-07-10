@@ -22,7 +22,7 @@ import { ProductCard } from "@/components/product/ProductCard";
 import { ProductGridSkeleton } from "@/components/product/ProductGridSkeleton";
 import {
   useListProducts,
-  getListProductsQuSamsung 65eryKey,
+  getListProductsQueryKey,
   useListCategories,
   getListCategoriesQueryKey,
 } from "@workspace/api-client-react";
