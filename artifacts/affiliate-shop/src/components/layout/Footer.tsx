@@ -14,10 +14,7 @@ export function Footer() {
 
   const handleSubscribe = (e: React.FormEvent) => {
     e.preventDefault();
-    if (email.trim()) {
-      setSubscribed(true);
-      setEmail("");
-    }
+    if (email.trim()) { setSubscribed(true); setEmail(""); }
   };
 
   const quickLinks = [
@@ -25,18 +22,18 @@ export function Footer() {
     { href: "/products", label: "All Deals" },
     { href: "/categories", label: "All Categories" },
     { href: "/products?featured=true", label: "Featured Picks" },
+    { href: "/wishlist", label: "My Wishlist" },
+    { href: "/compare", label: "Compare Products" },
   ];
 
-  const supportLinks = [
-    { href: "#", label: "About DealHub" },
-    { href: "#", label: "How It Works" },
-    { href: "#", label: "Affiliate Disclosure" },
-    { href: "#", label: "Privacy Policy" },
-    { href: "#", label: "Terms of Service" },
-    { href: "#", label: "Contact Us" },
+  const companyLinks = [
+    { href: "/about", label: "About DealHub" },
+    { href: "/contact", label: "Contact Us" },
+    { href: "/privacy", label: "Privacy Policy" },
+    { href: "/terms", label: "Terms & Conditions" },
   ];
 
-  const topBrands = ["Apple", "Sony", "Nike", "Samsung", "Dyson", "Le Creuset", "Garmin", "Logitech"];
+  const topBrands = ["Apple", "Sony", "Nike", "Samsung", "Dyson", "Garmin", "Logitech", "Le Creuset"];
 
   const trustBadges = [
     { icon: Shield, label: "Secure Links", desc: "All affiliate links verified" },
@@ -73,10 +70,10 @@ export function Footer() {
         </div>
       </div>
 
-      {/* Main footer grid */}
+      {/* Main grid */}
       <div className="container mx-auto px-4 py-14 md:py-20">
         <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-5 gap-10">
-          {/* Brand column */}
+          {/* Brand */}
           <div className="lg:col-span-2 space-y-5">
             <Link href="/" className="flex items-center gap-2">
               <div className="bg-primary text-primary-foreground p-1.5 rounded-md">
@@ -85,30 +82,15 @@ export function Footer() {
               <span className="font-display font-bold text-xl tracking-tight">DealHub</span>
             </Link>
             <p className="text-accent-foreground/70 text-sm leading-relaxed max-w-xs">
-              Your trusted global source for the best products at the lowest prices. We scour the web across hundreds of retailers so you never overpay again.
+              Your trusted global source for the best products at the lowest prices. We scour hundreds of retailers so you never overpay.
             </p>
-
-            {/* Contact info */}
             <div className="space-y-2 text-sm text-accent-foreground/60">
-              <div className="flex items-center gap-2">
-                <MapPin className="w-4 h-4 shrink-0" />
-                <span>San Francisco, CA — Global</span>
-              </div>
-              <div className="flex items-center gap-2">
-                <Phone className="w-4 h-4 shrink-0" />
-                <span>support@dealhub.com</span>
-              </div>
+              <div className="flex items-center gap-2"><MapPin className="w-4 h-4 shrink-0" /><span>San Francisco, CA — Global</span></div>
+              <div className="flex items-center gap-2"><Phone className="w-4 h-4 shrink-0" /><span>hello@dealhub.com</span></div>
             </div>
-
-            {/* Socials */}
             <div className="flex items-center gap-2">
               {socials.map(({ icon: Icon, href, label }) => (
-                <a
-                  key={label}
-                  href={href}
-                  aria-label={label}
-                  className="w-9 h-9 rounded-full bg-accent-foreground/10 text-accent-foreground/60 hover:bg-primary hover:text-primary-foreground transition-all flex items-center justify-center"
-                >
+                <a key={label} href={href} aria-label={label} className="w-9 h-9 rounded-full bg-accent-foreground/10 text-accent-foreground/60 hover:bg-primary hover:text-primary-foreground transition-all flex items-center justify-center">
                   <Icon className="w-4 h-4" />
                 </a>
               ))}
@@ -121,40 +103,30 @@ export function Footer() {
             <ul className="space-y-2.5 text-sm">
               {categories?.map((category) => (
                 <li key={category.id}>
-                  <Link
-                    href={`/products?category=${category.slug}`}
-                    className="text-accent-foreground/70 hover:text-primary transition-colors flex items-center justify-between group"
-                  >
+                  <Link href={`/products?category=${category.slug}`} className="text-accent-foreground/70 hover:text-primary transition-colors flex items-center justify-between group">
                     <span>{category.name}</span>
-                    <span className="text-xs bg-accent-foreground/10 px-1.5 py-0.5 rounded group-hover:bg-primary/20 group-hover:text-primary transition-all">
-                      {category.productCount}
-                    </span>
+                    <span className="text-xs bg-accent-foreground/10 px-1.5 py-0.5 rounded group-hover:bg-primary/20 group-hover:text-primary transition-all">{category.productCount}</span>
                   </Link>
                 </li>
               ))}
             </ul>
           </div>
 
-          {/* Quick links + support */}
+          {/* Quick Links + Company */}
           <div>
             <h4 className="font-display font-semibold mb-5 text-accent-foreground">Shop</h4>
             <ul className="space-y-2.5 text-sm mb-8">
               {quickLinks.map((link) => (
-                <li key={link.href}>
-                  <Link href={link.href} className="text-accent-foreground/70 hover:text-primary transition-colors">
-                    {link.label}
-                  </Link>
+                <li key={link.label}>
+                  <Link href={link.href} className="text-accent-foreground/70 hover:text-primary transition-colors">{link.label}</Link>
                 </li>
               ))}
             </ul>
-
-            <h4 className="font-display font-semibold mb-4 text-accent-foreground">Support</h4>
+            <h4 className="font-display font-semibold mb-4 text-accent-foreground">Company</h4>
             <ul className="space-y-2.5 text-sm">
-              {supportLinks.map((link) => (
+              {companyLinks.map((link) => (
                 <li key={link.label}>
-                  <a href={link.href} className="text-accent-foreground/70 hover:text-primary transition-colors">
-                    {link.label}
-                  </a>
+                  <Link href={link.href} className="text-accent-foreground/70 hover:text-primary transition-colors">{link.label}</Link>
                 </li>
               ))}
             </ul>
@@ -164,7 +136,7 @@ export function Footer() {
           <div>
             <h4 className="font-display font-semibold mb-5 text-accent-foreground">Get Deals First</h4>
             <p className="text-sm text-accent-foreground/70 mb-4 leading-relaxed">
-              Join 50,000+ deal hunters. Get the best deals delivered to your inbox before they sell out.
+              Join 50,000+ deal hunters. Get the best deals before they sell out.
             </p>
             {subscribed ? (
               <div className="bg-primary/20 text-primary border border-primary/30 rounded-lg p-4 text-sm font-medium">
@@ -183,23 +155,15 @@ export function Footer() {
                     required
                   />
                 </div>
-                <Button type="submit" className="w-full font-semibold">
-                  Subscribe — It's Free
-                </Button>
+                <Button type="submit" className="w-full font-semibold">Subscribe — It's Free</Button>
                 <p className="text-[11px] text-accent-foreground/40 text-center">Unsubscribe anytime. No spam, ever.</p>
               </form>
             )}
-
-            {/* Top brands */}
             <div className="mt-8">
               <p className="text-xs text-accent-foreground/50 font-semibold uppercase tracking-wider mb-3">Featured Brands</p>
               <div className="flex flex-wrap gap-1.5">
                 {topBrands.map((brand) => (
-                  <Link
-                    key={brand}
-                    href={`/products?search=${encodeURIComponent(brand)}`}
-                    className="text-xs bg-accent-foreground/10 text-accent-foreground/70 hover:bg-primary/20 hover:text-primary px-2 py-0.5 rounded-full transition-all"
-                  >
+                  <Link key={brand} href={`/products?brand=${encodeURIComponent(brand)}`} className="text-xs bg-accent-foreground/10 text-accent-foreground/70 hover:bg-primary/20 hover:text-primary px-2 py-0.5 rounded-full transition-all">
                     {brand}
                   </Link>
                 ))}
@@ -211,18 +175,22 @@ export function Footer() {
         {/* Bottom bar */}
         <div className="border-t border-accent-foreground/10 mt-14 pt-8 flex flex-col md:flex-row justify-between items-center gap-4">
           <p className="text-xs text-accent-foreground/50 text-center md:text-left">
-            &copy; {new Date().getFullYear()} DealHub Global. All rights reserved. Built with ❤️ for smart shoppers worldwide.
+            &copy; {new Date().getFullYear()} DealHub Global. All rights reserved.
           </p>
           <div className="flex items-center gap-5">
-            {["Privacy Policy", "Terms of Service", "Cookie Policy"].map((item) => (
-              <a key={item} href="#" className="text-xs text-accent-foreground/40 hover:text-primary transition-colors">
-                {item}
-              </a>
+            {[
+              { label: "Privacy Policy", href: "/privacy" },
+              { label: "Terms of Service", href: "/terms" },
+              { label: "Contact", href: "/contact" },
+            ].map((item) => (
+              <Link key={item.label} href={item.href} className="text-xs text-accent-foreground/40 hover:text-primary transition-colors">
+                {item.label}
+              </Link>
             ))}
           </div>
         </div>
         <p className="text-xs text-accent-foreground/30 text-center mt-4 max-w-3xl mx-auto leading-relaxed">
-          Affiliate Disclosure: DealHub is reader-supported. When you buy through links on our site, we may earn an affiliate commission at no extra cost to you. This helps us keep the lights on and the deals flowing.
+          Affiliate Disclosure: DealHub is reader-supported. When you buy through links on our site, we may earn an affiliate commission at no extra cost to you.
         </p>
       </div>
     </footer>

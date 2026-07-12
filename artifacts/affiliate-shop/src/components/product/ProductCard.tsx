@@ -1,14 +1,17 @@
 import { Link } from "wouter";
-import { Heart, ExternalLink } from "lucide-react";
+import { Heart, ExternalLink, GitCompare } from "lucide-react";
 import { Badge } from "@/components/ui/badge";
 import { Button } from "@/components/ui/button";
 import { Card, CardContent, CardFooter, CardHeader } from "@/components/ui/card";
 import { StarRating } from "./StarRating";
 import type { Product } from "@workspace/api-client-react";
 import { useWishlist } from "@/context/WishlistContext";
+import { useCompare } from "@/context/CompareContext";
+import { trackAffiliateClick, buildAffiliateUrl } from "@/lib/affiliateTracking";
 
 interface ProductCardProps {
   product: Product;
+  hideCompare?: boolean;
 }
 
 const categoryColors: Record<string, string> = {
@@ -20,9 +23,11 @@ const categoryColors: Record<string, string> = {
   books: "bg-amber-100 text-amber-700",
 };
 
-export function ProductCard({ product }: ProductCardProps) {
-  const { toggle, isWishlisted } = useWishlist();
+export function ProductCard({ product, hideCompare = false }: ProductCardProps) {
+  const { toggle: toggleWishlist, isWishlisted } = useWishlist();
+  const { toggleCompare, isInCompare, atLimit } = useCompare();
   const wishlisted = isWishlisted(product.id);
+  const inCompare = isInCompare(product.id);
 
   const discountPct =
     product.originalPrice && product.originalPrice > product.price
@@ -30,6 +35,7 @@ export function ProductCard({ product }: ProductCardProps) {
       : null;
 
   const categoryColor = categoryColors[product.category] ?? "bg-primary/10 text-primary";
+  const affiliateUrl = buildAffiliateUrl(product.affiliateUrl, product.slug);
 
   return (
     <Card className="flex flex-col overflow-hidden transition-all duration-300 hover:shadow-xl hover:-translate-y-1 hover:ring-2 hover:ring-primary/30 group">
@@ -59,7 +65,7 @@ export function ProductCard({ product }: ProductCardProps) {
         )}
         {/* Wishlist button */}
         <button
-          onClick={(e) => { e.preventDefault(); e.stopPropagation(); toggle(product.id); }}
+          onClick={(e) => { e.preventDefault(); e.stopPropagation(); toggleWishlist(product.id); }}
           className={`absolute bottom-3 right-3 z-20 w-8 h-8 rounded-full flex items-center justify-center shadow-md transition-all duration-200 ${
             wishlisted
               ? "bg-red-500 text-white scale-110"
@@ -95,13 +101,34 @@ export function ProductCard({ product }: ProductCardProps) {
         </div>
       </CardContent>
 
-      <CardFooter className="p-5 pt-0 z-20">
-        <Button asChild className="w-full font-semibold group/btn" size="lg">
-          <a href={product.affiliateUrl} target="_blank" rel="noopener noreferrer">
+      <CardFooter className="p-5 pt-0 flex flex-col gap-2 z-20">
+        <Button
+          asChild
+          className="w-full font-semibold group/btn"
+          size="lg"
+          onClick={() => trackAffiliateClick(product.id, product.title, product.slug)}
+        >
+          <a href={affiliateUrl} target="_blank" rel="noopener noreferrer">
             Get This Deal
             <ExternalLink className="w-4 h-4 ml-2 opacity-75" />
           </a>
         </Button>
+        {!hideCompare && (
+          <button
+            onClick={() => toggleCompare(product)}
+            disabled={!inCompare && atLimit}
+            className={`w-full flex items-center justify-center gap-1.5 text-xs font-medium py-1.5 rounded-lg transition-all border ${
+              inCompare
+                ? "bg-primary/10 text-primary border-primary/30"
+                : atLimit
+                  ? "text-muted-foreground/40 border-muted/40 cursor-not-allowed"
+                  : "text-muted-foreground border-muted hover:border-primary/30 hover:text-primary hover:bg-primary/5"
+            }`}
+          >
+            <GitCompare className="w-3.5 h-3.5" />
+            {inCompare ? "Remove from compare" : atLimit ? "Compare limit reached" : "Add to compare"}
+          </button>
+        )}
       </CardFooter>
     </Card>
   );

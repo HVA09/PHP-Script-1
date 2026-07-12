@@ -1,6 +1,6 @@
-import { useEffect, useMemo, useState } from "react";
+import { useMemo, useState } from "react";
 import { Link, useLocation } from "wouter";
-import { ArrowRight, TrendingUp, Package, Tag, Sparkles, Search, Flame, Zap, Star, LayoutGrid } from "lucide-react";
+import { ArrowRight, TrendingUp, Package, Tag, Sparkles, Search, Flame, Zap, Star, LayoutGrid, Award, Clock } from "lucide-react";
 import { Button } from "@/components/ui/button";
 import { Input } from "@/components/ui/input";
 import { Badge } from "@/components/ui/badge";
@@ -14,6 +14,7 @@ import {
 } from "@workspace/api-client-react";
 import { ProductCard } from "@/components/product/ProductCard";
 import { ProductGridSkeleton } from "@/components/product/ProductGridSkeleton";
+import { useSEO } from "@/hooks/useSEO";
 
 const categoryIcons: Record<string, string> = {
   electronics: "💻",
@@ -76,9 +77,11 @@ export default function Home() {
   const [, setLocation] = useLocation();
   const [searchQuery, setSearchQuery] = useState("");
 
-  useEffect(() => {
-    document.title = "DealHub — Global Affiliate Marketplace";
-  }, []);
+  useSEO({
+    title: "DealHub — Global Affiliate Marketplace",
+    description: "Discover the smartest deals on electronics, fashion, home goods, sports gear, beauty products, and books. Updated daily.",
+    keywords: "deals, affiliate marketplace, best prices, electronics, fashion, home kitchen",
+  });
 
   const { data: featuredProducts, isLoading: loadingFeatured } = useListProducts(
     { featured: true },
@@ -98,7 +101,7 @@ export default function Home() {
     query: { queryKey: getListCategoriesQueryKey() },
   });
 
-  // Trending = highest review count
+  // Trending = highest review count (Best Sellers)
   const trendingProducts = useMemo(() => {
     if (!allProducts) return [];
     return [...allProducts].sort((a, b) => (b.reviewCount ?? 0) - (a.reviewCount ?? 0)).slice(0, 8);
@@ -115,6 +118,21 @@ export default function Home() {
         return discB - discA;
       })
       .slice(0, 8);
+  }, [allProducts]);
+
+  // Top Rated = highest average rating
+  const topRated = useMemo(() => {
+    if (!allProducts) return [];
+    return [...allProducts]
+      .filter((p) => p.rating != null && p.rating >= 4)
+      .sort((a, b) => (b.rating ?? 0) - (a.rating ?? 0))
+      .slice(0, 4);
+  }, [allProducts]);
+
+  // New Arrivals = highest IDs (most recently added)
+  const newArrivals = useMemo(() => {
+    if (!allProducts) return [];
+    return [...allProducts].sort((a, b) => b.id - a.id).slice(0, 4);
   }, [allProducts]);
 
   const heroImages = featuredProducts?.slice(0, 4) ?? [];
@@ -397,7 +415,78 @@ export default function Home() {
       {/* Category Strips */}
       <CategoryStrip title="Electronics" categorySlug="electronics" link="/products?category=electronics" emoji="💻" />
       <CategoryStrip title="Fashion" categorySlug="fashion" link="/products?category=fashion" emoji="👗" />
+
+      {/* Top Rated */}
+      {topRated.length > 0 && (
+        <section className="container mx-auto px-4">
+          <div className="flex items-end justify-between mb-6">
+            <div>
+              <div className="flex items-center gap-2 mb-1">
+                <span className="inline-flex items-center gap-1 bg-amber-100 text-amber-700 text-xs font-bold px-2.5 py-1 rounded-full">
+                  <Award className="w-3.5 h-3.5" /> Top Rated
+                </span>
+              </div>
+              <h2 className="font-display text-2xl md:text-3xl font-bold tracking-tight border-l-4 border-amber-400 pl-3">
+                Highest Rated Products
+              </h2>
+              <p className="text-muted-foreground mt-1 pl-4 text-sm">Rated 4★ and above by verified buyers.</p>
+            </div>
+            <Button variant="ghost" asChild className="hidden sm:flex group">
+              <Link href="/products?sort=rating">
+                View all <ArrowRight className="ml-2 w-4 h-4 group-hover:translate-x-1 transition-transform" />
+              </Link>
+            </Button>
+          </div>
+          {loadingAll ? (
+            <ProductGridSkeleton count={4} />
+          ) : (
+            <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-4 gap-6">
+              {topRated.map((product) => (
+                <ProductCard key={product.id} product={product} />
+              ))}
+            </div>
+          )}
+        </section>
+      )}
+
       <CategoryStrip title="Home & Kitchen" categorySlug="home-kitchen" link="/products?category=home-kitchen" emoji="🏠" />
+
+      {/* New Arrivals */}
+      {newArrivals.length > 0 && (
+        <section className="container mx-auto px-4">
+          <div className="flex items-end justify-between mb-6">
+            <div>
+              <div className="flex items-center gap-2 mb-1">
+                <span className="inline-flex items-center gap-1 bg-blue-100 text-blue-700 text-xs font-bold px-2.5 py-1 rounded-full">
+                  <Clock className="w-3.5 h-3.5" /> New Arrivals
+                </span>
+              </div>
+              <h2 className="font-display text-2xl md:text-3xl font-bold tracking-tight border-l-4 border-blue-400 pl-3">
+                Just Added
+              </h2>
+              <p className="text-muted-foreground mt-1 pl-4 text-sm">The freshest picks, added to DealHub recently.</p>
+            </div>
+            <Button variant="ghost" asChild className="hidden sm:flex group">
+              <Link href="/products?sort=newest">
+                View all <ArrowRight className="ml-2 w-4 h-4 group-hover:translate-x-1 transition-transform" />
+              </Link>
+            </Button>
+          </div>
+          {loadingAll ? (
+            <ProductGridSkeleton count={4} />
+          ) : (
+            <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-4 gap-6">
+              {newArrivals.map((product) => (
+                <div key={product.id} className="relative">
+                  <span className="absolute -top-2 -right-2 z-30 bg-blue-500 text-white text-[10px] font-bold px-1.5 py-0.5 rounded-full shadow-md">NEW</span>
+                  <ProductCard product={product} />
+                </div>
+              ))}
+            </div>
+          )}
+        </section>
+      )}
+
       <CategoryStrip title="Sports & Outdoors" categorySlug="sports-outdoors" link="/products?category=sports-outdoors" emoji="🏃" />
 
       {/* More Best Deals (bottom rows) */}

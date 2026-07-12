@@ -1,6 +1,7 @@
-import { ReactNode } from "react";
+import { type ReactNode } from "react";
 import { Header } from "./Header";
 import { Footer } from "./Footer";
+import { CompareBar } from "@/components/product/CompareBar";
 
 export function Layout({ children }: { children: ReactNode }) {
   return (
@@ -10,6 +11,7 @@ export function Layout({ children }: { children: ReactNode }) {
         {children}
       </main>
       <Footer />
+      <CompareBar />
     </div>
   );
 }
