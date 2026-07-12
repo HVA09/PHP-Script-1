@@ -151,7 +151,7 @@ export function Footer() {
             <h4 className="font-display font-semibold mb-4 text-accent-foreground">Support</h4>
             <ul className="space-y-2.5 text-sm">
               {supportLinks.map((link) => (
-                <li key={link.href}>
+                <li key={link.label}>
                   <a href={link.href} className="text-accent-foreground/70 hover:text-primary transition-colors">
                     {link.label}
                   </a>
