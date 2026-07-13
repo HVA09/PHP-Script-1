@@ -116,6 +116,7 @@ export function Header() {
     { href: "/", label: "Home" },
     { href: "/products", label: "All Deals" },
     { href: "/categories", label: "Categories", icon: LayoutGrid },
+    { href: "/blog", label: "Blog" },
     { href: "/about", label: "About" },
   ];
 

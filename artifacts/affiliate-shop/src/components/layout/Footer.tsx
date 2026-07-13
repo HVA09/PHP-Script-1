@@ -21,6 +21,7 @@ export function Footer() {
     { href: "/", label: "Home" },
     { href: "/products", label: "All Deals" },
     { href: "/categories", label: "All Categories" },
+    { href: "/blog", label: "Blog & Reviews" },
     { href: "/products?featured=true", label: "Featured Picks" },
     { href: "/wishlist", label: "My Wishlist" },
     { href: "/compare", label: "Compare Products" },
