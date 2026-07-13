@@ -11,6 +11,7 @@ import { Tabs, TabsContent, TabsList, TabsTrigger } from "@/components/ui/tabs";
 import { StarRating } from "@/components/product/StarRating";
 import { ProductCard } from "@/components/product/ProductCard";
 import { useWishlist } from "@/context/WishlistContext";
+import { useRecentlyViewed } from "@/context/RecentlyViewedContext";
 import { getGalleryImages } from "@/data/productImages";
 import {
   useGetProductBySlug,
@@ -195,6 +196,7 @@ export default function ProductDetail() {
   const params = useParams();
   const slug = params.slug || "";
   const { toggle, isWishlisted } = useWishlist();
+  const { track: trackView } = useRecentlyViewed();
 
   const { data: product, isLoading: loadingProduct, error } = useGetProductBySlug(slug, {
     query: { enabled: !!slug, queryKey: getGetProductBySlugQueryKey(slug) },
@@ -223,6 +225,7 @@ export default function ProductDetail() {
 
   useEffect(() => {
     if (product?.title) {
+      trackView(product.id);
       document.title = `${product.title} | DealHub`;
       const existing = document.getElementById("product-jsonld");
       if (existing) existing.remove();

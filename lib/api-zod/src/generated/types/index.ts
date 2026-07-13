@@ -6,13 +6,24 @@
  * OpenAPI spec version: 0.1.0
  */
 
+export * from './authorizationSessionHeaderParameter';
+export * from './authUser';
+export * from './authUserEnvelope';
+export * from './beginBrowserLoginParams';
 export * from './category';
+export * from './errorEnvelope';
+export * from './handleBrowserLoginCallbackParams';
 export * from './healthStatus';
 export * from './listProductsParams';
+export * from './logoutSuccess';
+export * from './mobileTokenExchangeRequest';
+export * from './mobileTokenExchangeSuccess';
 export * from './product';
 export * from './productDetail';
 export * from './productDetailSpecifications';
 export * from './productStats';
+export * from './recentlyViewed';
 export * from './review';
 export * from './reviewsResponse';
 export * from './reviewsResponseRatingBreakdown';
+export * from './userWishlist';

@@ -3,8 +3,10 @@ import { QueryClient, QueryClientProvider } from "@tanstack/react-query";
 import { Toaster } from "@/components/ui/toaster";
 import { TooltipProvider } from "@/components/ui/tooltip";
 import { Layout } from "@/components/layout/Layout";
+import { AuthProvider } from "@/context/AuthContext";
 import { WishlistProvider } from "@/context/WishlistContext";
 import { CompareProvider } from "@/context/CompareContext";
+import { RecentlyViewedProvider } from "@/context/RecentlyViewedContext";
 import NotFound from "@/pages/not-found";
 import Home from "@/pages/home";
 import Products from "@/pages/products";
@@ -18,6 +20,7 @@ import Privacy from "@/pages/privacy";
 import Terms from "@/pages/terms";
 import Blog from "@/pages/blog";
 import BlogPost from "@/pages/blog-post";
+import Profile from "@/pages/profile";
 
 const queryClient = new QueryClient({
   defaultOptions: {
@@ -44,6 +47,7 @@ function Router() {
         <Route path="/terms" component={Terms} />
         <Route path="/blog" component={Blog} />
         <Route path="/blog/:slug" component={BlogPost} />
+        <Route path="/profile" component={Profile} />
         <Route component={NotFound} />
       </Switch>
     </Layout>
@@ -53,16 +57,20 @@ function Router() {
 function App() {
   return (
     <QueryClientProvider client={queryClient}>
-      <WishlistProvider>
-        <CompareProvider>
-          <TooltipProvider>
-            <WouterRouter base={import.meta.env.BASE_URL.replace(/\/$/, "")}>
-              <Router />
-            </WouterRouter>
-            <Toaster />
-          </TooltipProvider>
-        </CompareProvider>
-      </WishlistProvider>
+      <AuthProvider>
+        <RecentlyViewedProvider>
+          <WishlistProvider>
+            <CompareProvider>
+              <TooltipProvider>
+                <WouterRouter base={import.meta.env.BASE_URL.replace(/\/$/, "")}>
+                  <Router />
+                </WouterRouter>
+                <Toaster />
+              </TooltipProvider>
+            </CompareProvider>
+          </WishlistProvider>
+        </RecentlyViewedProvider>
+      </AuthProvider>
     </QueryClientProvider>
   );
 }

@@ -3,11 +3,13 @@ import { Link, useLocation } from "wouter";
 import {
   Search, ShoppingBag, Menu, X, Laptop, Shirt, Home,
   Dumbbell, Sparkles, BookOpen, Heart, LayoutGrid, GitCompare,
+  User, LogIn, LogOut,
 } from "lucide-react";
 import { Input } from "@/components/ui/input";
 import { Button } from "@/components/ui/button";
 import { useWishlist } from "@/context/WishlistContext";
 import { useCompare } from "@/context/CompareContext";
+import { useAuthContext } from "@/context/AuthContext";
 import { useListProducts, getListProductsQueryKey } from "@workspace/api-client-react";
 
 function InstantSearchDropdown({
@@ -90,9 +92,9 @@ export function Header() {
   const [isMobileMenuOpen, setIsMobileMenuOpen] = useState(false);
   const { count: wishlistCount } = useWishlist();
   const { count: compareCount } = useCompare();
+  const { user, isAuthenticated, isLoading: authLoading, login, logout } = useAuthContext();
   const searchRef = useRef<HTMLDivElement>(null);
 
-  // Close dropdown on click outside
   useEffect(() => {
     function handleClick(e: MouseEvent) {
       if (searchRef.current && !searchRef.current.contains(e.target as Node)) {
@@ -128,6 +130,13 @@ export function Header() {
     { href: "/products?category=beauty-health", label: "Beauty", icon: Sparkles },
     { href: "/products?category=books", label: "Books", icon: BookOpen },
   ];
+
+  const displayName = user
+    ? [user.firstName, user.lastName].filter(Boolean).join(" ") || "Account"
+    : null;
+  const initials = user
+    ? [user.firstName?.[0], user.lastName?.[0]].filter(Boolean).join("").toUpperCase() || "U"
+    : null;
 
   return (
     <header className="sticky top-0 z-50 w-full shadow-sm">
@@ -220,6 +229,38 @@ export function Header() {
               )}
             </Link>
 
+            {/* Auth button */}
+            {!authLoading && (
+              isAuthenticated && user ? (
+                <Link href="/profile">
+                  <button className="hidden md:flex items-center gap-2 h-9 px-3 rounded-md border hover:border-primary/40 hover:bg-muted transition-all text-sm font-medium">
+                    {user.profileImageUrl ? (
+                      <img
+                        src={user.profileImageUrl}
+                        alt={displayName ?? ""}
+                        className="w-6 h-6 rounded-full object-cover border border-primary/20"
+                      />
+                    ) : (
+                      <div className="w-6 h-6 rounded-full bg-primary text-primary-foreground text-[10px] font-bold flex items-center justify-center">
+                        {initials}
+                      </div>
+                    )}
+                    <span className="max-w-[80px] truncate">{displayName}</span>
+                  </button>
+                </Link>
+              ) : (
+                <Button
+                  variant="outline"
+                  size="sm"
+                  onClick={login}
+                  className="hidden md:flex gap-1.5 h-9"
+                >
+                  <LogIn className="w-3.5 h-3.5" />
+                  Log in
+                </Button>
+              )
+            )}
+
             {/* Mobile hamburger */}
             <Button
               variant="ghost"
@@ -266,6 +307,35 @@ export function Header() {
                   <GitCompare className="w-4 h-4" />
                   Compare ({compareCount})
                 </Link>
+              )}
+              <div className="my-1 border-t" />
+              {/* Auth row in mobile */}
+              {!authLoading && (
+                isAuthenticated ? (
+                  <div className="flex items-center gap-2 px-3 py-2">
+                    {user?.profileImageUrl ? (
+                      <img src={user.profileImageUrl} alt="" className="w-7 h-7 rounded-full object-cover" />
+                    ) : (
+                      <div className="w-7 h-7 rounded-full bg-primary text-primary-foreground text-xs font-bold flex items-center justify-center">
+                        {initials}
+                      </div>
+                    )}
+                    <Link href="/profile" className="flex-1 text-sm font-medium" onClick={() => setIsMobileMenuOpen(false)}>
+                      My Account
+                    </Link>
+                    <button onClick={() => { setIsMobileMenuOpen(false); logout(); }} className="text-xs text-muted-foreground flex items-center gap-1 hover:text-foreground">
+                      <LogOut className="w-3.5 h-3.5" /> Log out
+                    </button>
+                  </div>
+                ) : (
+                  <button
+                    onClick={() => { setIsMobileMenuOpen(false); login(); }}
+                    className="flex items-center gap-2 px-3 py-2 text-sm font-medium rounded-md hover:bg-muted text-primary w-full text-left"
+                  >
+                    <LogIn className="w-4 h-4" />
+                    Log In / Register
+                  </button>
+                )
               )}
               <div className="my-1 border-t" />
               <p className="px-3 py-1 text-xs text-muted-foreground uppercase tracking-wider font-semibold">Shop by Category</p>
