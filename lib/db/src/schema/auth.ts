@@ -1,5 +1,5 @@
 import { sql } from "drizzle-orm";
-import { index, integer, jsonb, pgTable, timestamp, varchar } from "drizzle-orm/pg-core";
+import { boolean, index, integer, jsonb, numeric, pgTable, timestamp, varchar } from "drizzle-orm/pg-core";
 import { productsTable } from "./products";
 
 // (IMPORTANT) This table is mandatory for Replit Auth, don't drop it.
@@ -54,3 +54,22 @@ export const userRecentlyViewedTable = pgTable(
     index("IDX_recently_viewed_unique").on(table.userId, table.productId),
   ],
 );
+
+export const priceAlertsTable = pgTable(
+  "price_alerts",
+  {
+    id: integer("id").primaryKey().generatedAlwaysAsIdentity(),
+    userId: varchar("user_id").notNull().references(() => usersTable.id, { onDelete: "cascade" }),
+    productId: integer("product_id").notNull().references(() => productsTable.id, { onDelete: "cascade" }),
+    targetPrice: numeric("target_price", { precision: 10, scale: 2 }).notNull(),
+    triggered: boolean("triggered").notNull().default(false),
+    createdAt: timestamp("created_at", { withTimezone: true }).notNull().defaultNow(),
+    updatedAt: timestamp("updated_at", { withTimezone: true }).notNull().defaultNow().$onUpdate(() => new Date()),
+  },
+  (table) => [
+    index("IDX_price_alerts_user").on(table.userId),
+    index("IDX_price_alerts_unique").on(table.userId, table.productId),
+  ],
+);
+
+export type PriceAlert = typeof priceAlertsTable.$inferSelect;
