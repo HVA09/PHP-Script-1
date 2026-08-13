@@ -135,6 +135,33 @@ export interface RecentlyViewed {
   productIds: number[];
 }
 
+export interface CreatePriceAlertRequest {
+  productId: number;
+  /** @exclusiveMinimum 0 */
+  targetPrice: number;
+}
+
+export interface PriceAlert {
+  id: number;
+  productId: number;
+  productTitle: string;
+  productSlug: string;
+  imageUrl: string;
+  currentPrice: number;
+  targetPrice: number;
+  triggered: boolean;
+  createdAt: string;
+}
+
+export interface PriceAlertList {
+  alerts: PriceAlert[];
+}
+
+export const DeletePriceAlertResponseValue = {
+  success: true,
+} as const;
+export type DeletePriceAlertResponse = typeof DeletePriceAlertResponseValue;
+
 /**
  * Opaque session token — Bearer <sid>.
  */

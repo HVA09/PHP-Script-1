@@ -10,6 +10,7 @@ import { Skeleton } from "@/components/ui/skeleton";
 import { Tabs, TabsContent, TabsList, TabsTrigger } from "@/components/ui/tabs";
 import { StarRating } from "@/components/product/StarRating";
 import { ProductCard } from "@/components/product/ProductCard";
+import { PriceAlertPanel } from "@/components/product/PriceAlertPanel";
 import { useWishlist } from "@/context/WishlistContext";
 import { useRecentlyViewed } from "@/context/RecentlyViewedContext";
 import { getGalleryImages } from "@/data/productImages";
@@ -398,6 +399,8 @@ export default function ProductDetail() {
                   Affiliate link — we may earn a small commission at no extra cost to you.
                 </p>
               </div>
+
+              <PriceAlertPanel productId={product.id} currentPrice={product.price} />
 
               {/* Trust badges */}
               <div className="grid grid-cols-3 gap-2">

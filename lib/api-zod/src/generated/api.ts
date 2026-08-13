@@ -307,3 +307,70 @@ export const TrackRecentlyViewedResponse = zod.object({
 })
 
 
+/**
+ * @summary Get the authenticated user's price alerts
+ */
+export const GetPriceAlertsHeader = zod.object({
+  "Authorization": zod.string().optional().describe('Opaque session token — Bearer <sid>.')
+})
+
+export const GetPriceAlertsResponse = zod.object({
+  "alerts": zod.array(zod.object({
+  "id": zod.number(),
+  "productId": zod.number(),
+  "productTitle": zod.string(),
+  "productSlug": zod.string(),
+  "imageUrl": zod.string(),
+  "currentPrice": zod.number(),
+  "targetPrice": zod.number(),
+  "triggered": zod.boolean(),
+  "createdAt": zod.coerce.date()
+}))
+})
+
+
+/**
+ * @summary Create or update a price alert for a product
+ */
+export const CreatePriceAlertHeader = zod.object({
+  "Authorization": zod.string().optional().describe('Opaque session token — Bearer <sid>.')
+})
+
+export const createPriceAlertBodyTargetPriceExclusiveMin = 0;
+
+
+
+export const CreatePriceAlertBody = zod.object({
+  "productId": zod.number(),
+  "targetPrice": zod.number().gt(createPriceAlertBodyTargetPriceExclusiveMin)
+})
+
+export const CreatePriceAlertResponse = zod.object({
+  "id": zod.number(),
+  "productId": zod.number(),
+  "productTitle": zod.string(),
+  "productSlug": zod.string(),
+  "imageUrl": zod.string(),
+  "currentPrice": zod.number(),
+  "targetPrice": zod.number(),
+  "triggered": zod.boolean(),
+  "createdAt": zod.coerce.date()
+})
+
+
+/**
+ * @summary Delete a price alert for a product
+ */
+export const DeletePriceAlertParams = zod.object({
+  "productId": zod.coerce.number()
+})
+
+export const DeletePriceAlertHeader = zod.object({
+  "Authorization": zod.string().optional().describe('Opaque session token — Bearer <sid>.')
+})
+
+export const DeletePriceAlertResponse = zod.object({
+  "success": zod.boolean()
+})
+
+

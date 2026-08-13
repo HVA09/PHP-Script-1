@@ -23,6 +23,8 @@ import type {
   AuthUserEnvelope,
   BeginBrowserLoginParams,
   Category,
+  CreatePriceAlertRequest,
+  DeletePriceAlertResponse,
   ErrorEnvelope,
   HandleBrowserLoginCallbackParams,
   HealthStatus,
@@ -30,6 +32,8 @@ import type {
   LogoutSuccess,
   MobileTokenExchangeRequest,
   MobileTokenExchangeSuccess,
+  PriceAlert,
+  PriceAlertList,
   Product,
   ProductDetail,
   ProductStats,
@@ -1435,5 +1439,222 @@ export const useTrackRecentlyViewed = <TError = ErrorType<ErrorEnvelope>,
         TContext
       > => {
       return useMutation(getTrackRecentlyViewedMutationOptions(options));
+    }
+
+export const getGetPriceAlertsUrl = () => {
+
+
+
+
+  return `/api/user/price-alerts`
+}
+
+/**
+ * @summary Get the authenticated user's price alerts
+ */
+export const getPriceAlerts = async ( options?: RequestInit): Promise<PriceAlertList> => {
+
+  return customFetch<PriceAlertList>(getGetPriceAlertsUrl(),
+  {
+    ...options,
+    method: 'GET'
+
+
+  }
+);}
+
+
+
+
+
+export const getGetPriceAlertsQueryKey = () => {
+    return [
+    `/api/user/price-alerts`
+    ] as const;
+    }
+
+
+export const getGetPriceAlertsQueryOptions = <TData = Awaited<ReturnType<typeof getPriceAlerts>>, TError = ErrorType<ErrorEnvelope>>( options?: { query?:UseQueryOptions<Awaited<ReturnType<typeof getPriceAlerts>>, TError, TData>, request?: SecondParameter<typeof customFetch>}
+) => {
+
+const {query: queryOptions, request: requestOptions} = options ?? {};
+
+  const queryKey =  queryOptions?.queryKey ?? getGetPriceAlertsQueryKey();
+
+
+
+    const queryFn: QueryFunction<Awaited<ReturnType<typeof getPriceAlerts>>> = ({ signal }) => getPriceAlerts({ signal, ...requestOptions });
+
+
+
+
+
+   return  { queryKey, queryFn, ...queryOptions} as UseQueryOptions<Awaited<ReturnType<typeof getPriceAlerts>>, TError, TData> & { queryKey: QueryKey }
+}
+
+export type GetPriceAlertsQueryResult = NonNullable<Awaited<ReturnType<typeof getPriceAlerts>>>
+export type GetPriceAlertsQueryError = ErrorType<ErrorEnvelope>
+
+
+/**
+ * @summary Get the authenticated user's price alerts
+ */
+
+export function useGetPriceAlerts<TData = Awaited<ReturnType<typeof getPriceAlerts>>, TError = ErrorType<ErrorEnvelope>>(
+  options?: { query?:UseQueryOptions<Awaited<ReturnType<typeof getPriceAlerts>>, TError, TData>, request?: SecondParameter<typeof customFetch>}
+
+ ):  UseQueryResult<TData, TError> & { queryKey: QueryKey } {
+
+  const queryOptions = getGetPriceAlertsQueryOptions(options)
+
+  const query = useQuery(queryOptions) as  UseQueryResult<TData, TError> & { queryKey: QueryKey };
+
+  return withQueryKey(query, queryOptions.queryKey);
+}
+
+
+
+
+
+
+
+export const getCreatePriceAlertUrl = () => {
+
+
+
+
+  return `/api/user/price-alerts`
+}
+
+/**
+ * @summary Create or update a price alert for a product
+ */
+export const createPriceAlert = async (createPriceAlertRequest: CreatePriceAlertRequest, options?: RequestInit): Promise<PriceAlert> => {
+
+  return customFetch<PriceAlert>(getCreatePriceAlertUrl(),
+  {
+    ...options,
+    method: 'POST',
+    headers: { 'Content-Type': 'application/json', ...options?.headers },
+    body: JSON.stringify(createPriceAlertRequest)
+  }
+);}
+
+
+
+
+export const getCreatePriceAlertMutationOptions = <TError = ErrorType<ErrorEnvelope>,
+    TContext = unknown>(options?: { mutation?:UseMutationOptions<Awaited<ReturnType<typeof createPriceAlert>>, TError,{data: BodyType<CreatePriceAlertRequest>}, TContext>, request?: SecondParameter<typeof customFetch>}
+): UseMutationOptions<Awaited<ReturnType<typeof createPriceAlert>>, TError,{data: BodyType<CreatePriceAlertRequest>}, TContext> => {
+
+const mutationKey = ['createPriceAlert'];
+const {mutation: mutationOptions, request: requestOptions} = options ?
+      options.mutation && 'mutationKey' in options.mutation && options.mutation.mutationKey ?
+      options
+      : {...options, mutation: {...options.mutation, mutationKey}}
+      : {mutation: { mutationKey, }, request: undefined};
+
+
+
+
+      const mutationFn: MutationFunction<Awaited<ReturnType<typeof createPriceAlert>>, {data: BodyType<CreatePriceAlertRequest>}> = (props) => {
+          const {data} = props ?? {};
+
+          return  createPriceAlert(data,requestOptions)
+        }
+
+
+
+
+
+
+  return  { mutationFn, ...mutationOptions }}
+
+    export type CreatePriceAlertMutationResult = NonNullable<Awaited<ReturnType<typeof createPriceAlert>>>
+    export type CreatePriceAlertMutationBody = BodyType<CreatePriceAlertRequest>
+    export type CreatePriceAlertMutationError = ErrorType<ErrorEnvelope>
+
+    /**
+ * @summary Create or update a price alert for a product
+ */
+export const useCreatePriceAlert = <TError = ErrorType<ErrorEnvelope>,
+    TContext = unknown>(options?: { mutation?:UseMutationOptions<Awaited<ReturnType<typeof createPriceAlert>>, TError,{data: BodyType<CreatePriceAlertRequest>}, TContext>, request?: SecondParameter<typeof customFetch>}
+ ): UseMutationResult<
+        Awaited<ReturnType<typeof createPriceAlert>>,
+        TError,
+        {data: BodyType<CreatePriceAlertRequest>},
+        TContext
+      > => {
+      return useMutation(getCreatePriceAlertMutationOptions(options));
+    }
+
+export const getDeletePriceAlertUrl = (productId: number,) => {
+
+
+
+
+  return `/api/user/price-alerts/${productId}`
+}
+
+/**
+ * @summary Delete a price alert for a product
+ */
+export const deletePriceAlert = async (productId: number, options?: RequestInit): Promise<DeletePriceAlertResponse> => {
+
+  return customFetch<DeletePriceAlertResponse>(getDeletePriceAlertUrl(productId),
+  {
+    ...options,
+    method: 'DELETE'
+
+
+  }
+);}
+
+
+
+
+export const getDeletePriceAlertMutationOptions = <TError = ErrorType<ErrorEnvelope>,
+    TContext = unknown>(options?: { mutation?:UseMutationOptions<Awaited<ReturnType<typeof deletePriceAlert>>, TError,{productId: number}, TContext>, request?: SecondParameter<typeof customFetch>}
+): UseMutationOptions<Awaited<ReturnType<typeof deletePriceAlert>>, TError,{productId: number}, TContext> => {
+
+const mutationKey = ['deletePriceAlert'];
+const {mutation: mutationOptions, request: requestOptions} = options ?
+      options.mutation && 'mutationKey' in options.mutation && options.mutation.mutationKey ?
+      options
+      : {...options, mutation: {...options.mutation, mutationKey}}
+      : {mutation: { mutationKey, }, request: undefined};
+
+
+
+
+      const mutationFn: MutationFunction<Awaited<ReturnType<typeof deletePriceAlert>>, {productId: number}> = (props) => {
+          const {productId} = props ?? {};
+
+          return  deletePriceAlert(productId,requestOptions)
+        }
+
+
+
+
+
+
+  return  { mutationFn, ...mutationOptions }}
+
+    export type DeletePriceAlertMutationResult = NonNullable<Awaited<ReturnType<typeof deletePriceAlert>>>
+
+    export type DeletePriceAlertMutationError = ErrorType<ErrorEnvelope>
+
+    /**
+ * @summary Delete a price alert for a product
+ */
+export const useDeletePriceAlert = <TError = ErrorType<ErrorEnvelope>,
+    TContext = unknown>(options?: { mutation?:UseMutationOptions<Awaited<ReturnType<typeof deletePriceAlert>>, TError,{productId: number}, TContext>, request?: SecondParameter<typeof customFetch>}
+ ): UseMutationResult<
+        Awaited<ReturnType<typeof deletePriceAlert>>,
+        TError,
+        {productId: number},
+        TContext
+      > => {
+      return useMutation(getDeletePriceAlertMutationOptions(options));
     }
 

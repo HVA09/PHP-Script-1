@@ -10,11 +10,13 @@ import {
   Mail,
   ShoppingBag,
   Package,
+  Bell,
 } from "lucide-react";
 import { Button } from "@/components/ui/button";
 import { Badge } from "@/components/ui/badge";
 import { Skeleton } from "@/components/ui/skeleton";
 import { ProductCard } from "@/components/product/ProductCard";
+import { PriceAlertsList } from "@/components/product/PriceAlertPanel";
 import { useAuthContext } from "@/context/AuthContext";
 import { useWishlist } from "@/context/WishlistContext";
 import { useRecentlyViewed } from "@/context/RecentlyViewedContext";
@@ -202,12 +204,26 @@ export default function Profile() {
             />
           </section>
 
+          {/* Price alerts */}
+          <section>
+            <div className="mb-5 flex items-center justify-between">
+              <h2 className="flex items-center gap-2 font-display text-xl font-bold">
+                <Bell className="h-5 w-5 text-primary" />
+                Price Alerts
+              </h2>
+              <Button variant="outline" size="sm" asChild>
+                <Link href="/alerts">Manage all <ChevronRight className="ml-1 h-3.5 w-3.5" /></Link>
+              </Button>
+            </div>
+            <PriceAlertsList />
+          </section>
+
           {/* Quick links */}
           <section className="grid grid-cols-1 sm:grid-cols-3 gap-4">
             {[
               { href: "/products", icon: Package, label: "Browse All Deals", sub: "Find today's best deals" },
               { href: "/wishlist", icon: Heart, label: "Full Wishlist", sub: "All your saved products" },
-              { href: "/categories", icon: ShoppingBag, label: "Shop by Category", sub: "Electronics, Fashion & more" },
+              { href: "/alerts", icon: Bell, label: "Price Alerts", sub: "Track target prices" },
             ].map(({ href, icon: Icon, label, sub }) => (
               <Link key={href} href={href}>
                 <div className="group flex items-center gap-4 p-4 rounded-xl border bg-card hover:border-primary/40 hover:bg-muted/40 transition-all cursor-pointer">

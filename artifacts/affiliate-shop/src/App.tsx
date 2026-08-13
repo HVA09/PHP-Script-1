@@ -21,6 +21,7 @@ import Terms from "@/pages/terms";
 import Blog from "@/pages/blog";
 import BlogPost from "@/pages/blog-post";
 import Profile from "@/pages/profile";
+import Alerts from "@/pages/alerts";
 
 const queryClient = new QueryClient({
   defaultOptions: {
@@ -48,6 +49,7 @@ function Router() {
         <Route path="/blog" component={Blog} />
         <Route path="/blog/:slug" component={BlogPost} />
         <Route path="/profile" component={Profile} />
+        <Route path="/alerts" component={Alerts} />
         <Route component={NotFound} />
       </Switch>
     </Layout>
