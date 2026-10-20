@@ -4,6 +4,8 @@ import {
   useState,
   useCallback,
   useEffect,
+  useMemo,
+  useRef,
   type ReactNode,
 } from "react";
 import { useAuthContext } from "./AuthContext";
@@ -46,17 +48,33 @@ function saveLocalWishlist(set: Set<number>) {
 }
 
 export function WishlistProvider({ children }: { children: ReactNode }) {
-  const { isAuthenticated } = useAuthContext();
+  const { user, isAuthenticated } = useAuthContext();
   const queryClient = useQueryClient();
+  const userId = user?.id;
+  const wishlistQueryKey = useMemo(
+    () => [...getGetUserWishlistQueryKey(), userId ?? "anonymous"],
+    [userId],
+  );
+  const previousUserId = useRef(userId);
 
   const [localWishlist, setLocalWishlist] = useState<Set<number>>(() => getLocalWishlist());
 
   const { data: serverData } = useGetUserWishlist({
-    query: { queryKey: getGetUserWishlistQueryKey(), enabled: isAuthenticated },
+    query: { queryKey: wishlistQueryKey, enabled: isAuthenticated },
   });
 
   const addMutation = useAddToWishlist();
   const removeMutation = useRemoveFromWishlist();
+
+  useEffect(() => {
+    const previousId = previousUserId.current;
+    if (previousId && previousId !== userId) {
+      const previousQueryKey = [...getGetUserWishlistQueryKey(), previousId];
+      void queryClient.cancelQueries({ queryKey: previousQueryKey, exact: true });
+      queryClient.removeQueries({ queryKey: previousQueryKey, exact: true });
+    }
+    previousUserId.current = userId;
+  }, [userId, queryClient]);
 
   useEffect(() => {
     if (!isAuthenticated) {
@@ -80,7 +98,7 @@ export function WishlistProvider({ children }: { children: ReactNode }) {
             { productId },
             {
               onSuccess: (data) => {
-                queryClient.setQueryData(getGetUserWishlistQueryKey(), data);
+                queryClient.setQueryData(wishlistQueryKey, data);
               },
             },
           );
@@ -89,7 +107,7 @@ export function WishlistProvider({ children }: { children: ReactNode }) {
             { productId },
             {
               onSuccess: (data) => {
-                queryClient.setQueryData(getGetUserWishlistQueryKey(), data);
+                queryClient.setQueryData(wishlistQueryKey, data);
               },
             },
           );
@@ -106,7 +124,7 @@ export function WishlistProvider({ children }: { children: ReactNode }) {
         });
       }
     },
-    [isAuthenticated, serverData, addMutation, removeMutation, queryClient],
+    [isAuthenticated, serverData, addMutation, removeMutation, queryClient, wishlistQueryKey],
   );
 
   const wishlist: Set<number> = isAuthenticated

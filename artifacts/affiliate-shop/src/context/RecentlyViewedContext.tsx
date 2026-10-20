@@ -4,6 +4,8 @@ import {
   useState,
   useCallback,
   useEffect,
+  useMemo,
+  useRef,
   type ReactNode,
 } from "react";
 import { useAuthContext } from "./AuthContext";
@@ -11,7 +13,6 @@ import {
   useGetRecentlyViewed,
   getGetRecentlyViewedQueryKey,
   useTrackRecentlyViewed,
-  getGetUserWishlistQueryKey,
 } from "@workspace/api-client-react";
 import { useQueryClient } from "@tanstack/react-query";
 
@@ -43,16 +44,32 @@ function setLocalIds(ids: number[]) {
 }
 
 export function RecentlyViewedProvider({ children }: { children: ReactNode }) {
-  const { isAuthenticated } = useAuthContext();
+  const { user, isAuthenticated } = useAuthContext();
   const queryClient = useQueryClient();
+  const userId = user?.id;
+  const recentlyViewedQueryKey = useMemo(
+    () => [...getGetRecentlyViewedQueryKey(), userId ?? "anonymous"],
+    [userId],
+  );
+  const previousUserId = useRef(userId);
 
   const [localIds, setLocalIdsState] = useState<number[]>(() => getLocalIds());
 
   const { data: serverData } = useGetRecentlyViewed(
-    { query: { queryKey: getGetRecentlyViewedQueryKey(), enabled: isAuthenticated } },
+    { query: { queryKey: recentlyViewedQueryKey, enabled: isAuthenticated } },
   );
 
   const trackMutation = useTrackRecentlyViewed();
+
+  useEffect(() => {
+    const previousId = previousUserId.current;
+    if (previousId && previousId !== userId) {
+      const previousQueryKey = [...getGetRecentlyViewedQueryKey(), previousId];
+      void queryClient.cancelQueries({ queryKey: previousQueryKey, exact: true });
+      queryClient.removeQueries({ queryKey: previousQueryKey, exact: true });
+    }
+    previousUserId.current = userId;
+  }, [userId, queryClient]);
 
   const track = useCallback(
     (productId: number) => {
@@ -61,7 +78,7 @@ export function RecentlyViewedProvider({ children }: { children: ReactNode }) {
           { productId },
           {
             onSuccess: (data) => {
-              queryClient.setQueryData(getGetRecentlyViewedQueryKey(), data);
+              queryClient.setQueryData(recentlyViewedQueryKey, data);
             },
           },
         );
@@ -73,7 +90,7 @@ export function RecentlyViewedProvider({ children }: { children: ReactNode }) {
         });
       }
     },
-    [isAuthenticated, trackMutation, queryClient],
+    [isAuthenticated, trackMutation, queryClient, recentlyViewedQueryKey],
   );
 
   useEffect(() => {

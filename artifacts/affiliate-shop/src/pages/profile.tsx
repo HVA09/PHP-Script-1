@@ -7,6 +7,7 @@ import {
   ChevronRight,
   LogIn,
   LogOut,
+  UserPlus,
   Mail,
   ShoppingBag,
   Package,
@@ -96,11 +97,16 @@ export default function Profile() {
             Log in to sync your wishlist across devices, see your recently viewed
             products, and manage your account.
           </p>
-          <Button size="lg" onClick={login} className="gap-2">
-            <LogIn className="w-4 h-4" /> Log In
-          </Button>
+          <div className="flex flex-col sm:flex-row justify-center gap-3">
+            <Button size="lg" onClick={login} className="gap-2">
+              <UserPlus className="w-4 h-4" /> Sign Up
+            </Button>
+            <Button size="lg" variant="outline" onClick={login} className="gap-2">
+              <LogIn className="w-4 h-4" /> Log In
+            </Button>
+          </div>
           <p className="text-xs text-muted-foreground mt-4">
-            No account yet? You can create one for free.
+            Create an account or access an existing one through the secure sign-in page.
           </p>
         </div>
       </div>
