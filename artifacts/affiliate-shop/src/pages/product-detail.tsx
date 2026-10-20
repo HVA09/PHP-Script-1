@@ -222,7 +222,11 @@ export default function ProductDetail() {
 
   const wishlisted = product ? isWishlisted(product.id) : false;
 
-  const galleryImages = product ? getGalleryImages(product.slug, product.imageUrl) : [];
+  const galleryImages = product
+    ? product.imageUrls?.length
+      ? product.imageUrls
+      : getGalleryImages(product.slug, product.imageUrl)
+    : [];
 
   useEffect(() => {
     if (product?.title) {
@@ -352,6 +356,9 @@ export default function ProductDetail() {
                 <h1 className="font-display text-3xl sm:text-4xl font-bold tracking-tight mt-2 leading-tight">
                   {product.title}
                 </h1>
+                {product.storeName && (
+                  <p className="mt-2 text-sm text-muted-foreground">Available at <span className="font-semibold text-foreground">{product.storeName}</span></p>
+                )}
               </div>
 
               <div className="flex items-center gap-3 flex-wrap">
@@ -381,7 +388,7 @@ export default function ProductDetail() {
                 <div className="flex gap-3">
                   <Button asChild size="lg" className="flex-1 h-14 text-base font-bold shadow-xl group">
                     <a href={product.affiliateUrl} target="_blank" rel="noopener noreferrer">
-                      Buy Now at Best Price
+                      {product.storeName ? `Shop at ${product.storeName}` : "Buy Now at Best Price"}
                       <ExternalLink className="w-5 h-5 ml-2 opacity-80 group-hover:translate-x-0.5 group-hover:-translate-y-0.5 transition-transform" />
                     </a>
                   </Button>
@@ -396,7 +403,7 @@ export default function ProductDetail() {
                   </Button>
                 </div>
                 <p className="text-xs text-muted-foreground text-center">
-                  Affiliate link — we may earn a small commission at no extra cost to you.
+                  Retailer link. Check the store for current pricing and availability.
                 </p>
               </div>
 

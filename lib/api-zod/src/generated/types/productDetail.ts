@@ -6,9 +6,5 @@
  * OpenAPI spec version: 0.1.0
  */
 import type { Product } from './product';
-import type { ProductDetailSpecifications } from './productDetailSpecifications';
 
-export type ProductDetail = Product & {
-  /** @nullable */
-  specifications?: ProductDetailSpecifications;
-};
+export type ProductDetail = Product;

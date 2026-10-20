@@ -4,6 +4,7 @@ import { ShoppingBag, Mail, Twitter, Instagram, Facebook, Youtube, MapPin, Phone
 import { useListCategories, getListCategoriesQueryKey } from "@workspace/api-client-react";
 import { Input } from "@/components/ui/input";
 import { Button } from "@/components/ui/button";
+import { useLanguage } from "@/context/LanguageContext";
 
 export function Footer() {
   const { data: categories } = useListCategories({
@@ -11,6 +12,7 @@ export function Footer() {
   });
   const [email, setEmail] = useState("");
   const [subscribed, setSubscribed] = useState(false);
+  const { t } = useLanguage();
 
   const handleSubscribe = (e: React.FormEvent) => {
     e.preventDefault();
@@ -18,20 +20,20 @@ export function Footer() {
   };
 
   const quickLinks = [
-    { href: "/", label: "Home" },
-    { href: "/products", label: "All Deals" },
-    { href: "/categories", label: "All Categories" },
-    { href: "/blog", label: "Blog & Reviews" },
-    { href: "/products?featured=true", label: "Featured Picks" },
-    { href: "/wishlist", label: "My Wishlist" },
-    { href: "/compare", label: "Compare Products" },
+    { href: "/", label: t("footer.home") },
+    { href: "/products", label: t("footer.allDeals") },
+    { href: "/categories", label: t("footer.allCategories") },
+    { href: "/blog", label: t("footer.blog") },
+    { href: "/products?featured=true", label: t("footer.featured") },
+    { href: "/wishlist", label: t("footer.wishlist") },
+    { href: "/compare", label: t("footer.compare") },
   ];
 
   const companyLinks = [
-    { href: "/about", label: "About DealHub" },
-    { href: "/contact", label: "Contact Us" },
-    { href: "/privacy", label: "Privacy Policy" },
-    { href: "/terms", label: "Terms & Conditions" },
+    { href: "/about", label: t("footer.about") },
+    { href: "/contact", label: t("footer.contact") },
+    { href: "/privacy", label: t("footer.privacy") },
+    { href: "/terms", label: t("footer.terms") },
   ];
 
   const topBrands = ["Apple", "Sony", "Nike", "Samsung", "Dyson", "Garmin", "Logitech", "Le Creuset"];
@@ -100,7 +102,7 @@ export function Footer() {
 
           {/* Categories */}
           <div>
-            <h4 className="font-display font-semibold mb-5 text-accent-foreground">Categories</h4>
+            <h4 className="font-display font-semibold mb-5 text-accent-foreground">{t("footer.categories")}</h4>
             <ul className="space-y-2.5 text-sm">
               {categories?.map((category) => (
                 <li key={category.id}>
@@ -115,7 +117,7 @@ export function Footer() {
 
           {/* Quick Links + Company */}
           <div>
-            <h4 className="font-display font-semibold mb-5 text-accent-foreground">Shop</h4>
+            <h4 className="font-display font-semibold mb-5 text-accent-foreground">{t("footer.shop")}</h4>
             <ul className="space-y-2.5 text-sm mb-8">
               {quickLinks.map((link) => (
                 <li key={link.label}>
@@ -123,7 +125,7 @@ export function Footer() {
                 </li>
               ))}
             </ul>
-            <h4 className="font-display font-semibold mb-4 text-accent-foreground">Company</h4>
+            <h4 className="font-display font-semibold mb-4 text-accent-foreground">{t("footer.company")}</h4>
             <ul className="space-y-2.5 text-sm">
               {companyLinks.map((link) => (
                 <li key={link.label}>
@@ -135,7 +137,7 @@ export function Footer() {
 
           {/* Newsletter */}
           <div>
-            <h4 className="font-display font-semibold mb-5 text-accent-foreground">Get Deals First</h4>
+            <h4 className="font-display font-semibold mb-5 text-accent-foreground">{t("footer.newsletter")}</h4>
             <p className="text-sm text-accent-foreground/70 mb-4 leading-relaxed">
               Join 50,000+ deal hunters. Get the best deals before they sell out.
             </p>
@@ -156,7 +158,7 @@ export function Footer() {
                     required
                   />
                 </div>
-                <Button type="submit" className="w-full font-semibold">Subscribe — It's Free</Button>
+                 <Button type="submit" className="w-full font-semibold">{t("footer.subscribe")}</Button>
                 <p className="text-[11px] text-accent-foreground/40 text-center">Unsubscribe anytime. No spam, ever.</p>
               </form>
             )}
@@ -191,7 +193,7 @@ export function Footer() {
           </div>
         </div>
         <p className="text-xs text-accent-foreground/30 text-center mt-4 max-w-3xl mx-auto leading-relaxed">
-          Affiliate Disclosure: DealHub is reader-supported. When you buy through links on our site, we may earn an affiliate commission at no extra cost to you.
+           {t("footer.disclosure")}
         </p>
       </div>
     </footer>

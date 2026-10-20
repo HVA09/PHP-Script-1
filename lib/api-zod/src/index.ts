@@ -17,7 +17,7 @@ export type {
   PriceAlertList,
   Product,
   ProductDetail,
-  ProductDetailSpecifications,
+  ProductSpecifications,
   ProductStats,
   RecentlyViewed,
   Review,

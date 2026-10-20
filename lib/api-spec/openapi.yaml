@@ -19,6 +19,8 @@ tags:
     description: Browser and mobile authentication endpoints.
   - name: user
     description: User account operations
+  - name: admin
+    description: Protected administration operations
 paths:
   /healthz:
     get:
@@ -490,6 +492,564 @@ paths:
               schema:
                 $ref: '#/components/schemas/ErrorEnvelope'
 
+  /admin/dashboard:
+    get:
+      operationId: getAdminDashboard
+      tags: [admin]
+      summary: Get administrator dashboard analytics
+      responses:
+        '200':
+          description: Dashboard analytics
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/AdminDashboard'
+        '401':
+          description: Authentication required
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/ErrorEnvelope'
+        '403':
+          description: Administrator access required
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/ErrorEnvelope'
+
+  /admin/products:
+    get:
+      operationId: listAdminProducts
+      tags: [admin]
+      summary: List products for administration
+      parameters:
+        - name: search
+          in: query
+          required: false
+          schema:
+            type: string
+        - name: category
+          in: query
+          required: false
+          schema:
+            type: string
+      responses:
+        '200':
+          description: Products
+          content:
+            application/json:
+              schema:
+                type: array
+                items:
+                  $ref: '#/components/schemas/Product'
+        '401':
+          description: Authentication required
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/ErrorEnvelope'
+        '403':
+          description: Administrator access required
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/ErrorEnvelope'
+    post:
+      operationId: createAdminProduct
+      tags: [admin]
+      summary: Create a product
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema:
+              $ref: '#/components/schemas/AdminProductCreateRequest'
+      responses:
+        '201':
+          description: Product created
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/Product'
+        '400':
+          description: Invalid product
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/ErrorEnvelope'
+        '401':
+          description: Authentication required
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/ErrorEnvelope'
+        '403':
+          description: Administrator access required
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/ErrorEnvelope'
+        '409':
+          description: Duplicate product slug
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/ErrorEnvelope'
+
+  /admin/products/{id}:
+    patch:
+      operationId: updateAdminProduct
+      tags: [admin]
+      summary: Update a product
+      parameters:
+        - name: id
+          in: path
+          required: true
+          schema:
+            type: integer
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema:
+              $ref: '#/components/schemas/AdminProductUpdateRequest'
+      responses:
+        '200':
+          description: Product updated
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/Product'
+        '400':
+          description: Invalid product
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/ErrorEnvelope'
+        '401':
+          description: Authentication required
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/ErrorEnvelope'
+        '403':
+          description: Administrator access required
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/ErrorEnvelope'
+        '404':
+          description: Product not found
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/ErrorEnvelope'
+        '409':
+          description: Duplicate product slug
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/ErrorEnvelope'
+    delete:
+      operationId: deleteAdminProduct
+      tags: [admin]
+      summary: Delete a product
+      parameters:
+        - name: id
+          in: path
+          required: true
+          schema:
+            type: integer
+      responses:
+        '200':
+          description: Product deleted
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/DeleteSuccess'
+        '401':
+          description: Authentication required
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/ErrorEnvelope'
+        '403':
+          description: Administrator access required
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/ErrorEnvelope'
+        '404':
+          description: Product not found
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/ErrorEnvelope'
+
+  /admin/categories:
+    get:
+      operationId: listAdminCategories
+      tags: [admin]
+      summary: List categories for administration
+      responses:
+        '200':
+          description: Categories
+          content:
+            application/json:
+              schema:
+                type: array
+                items:
+                  $ref: '#/components/schemas/Category'
+        '401':
+          description: Authentication required
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/ErrorEnvelope'
+        '403':
+          description: Administrator access required
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/ErrorEnvelope'
+    post:
+      operationId: createAdminCategory
+      tags: [admin]
+      summary: Create a category
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema:
+              $ref: '#/components/schemas/AdminCategoryCreateRequest'
+      responses:
+        '201':
+          description: Category created
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/Category'
+        '400':
+          description: Invalid category
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/ErrorEnvelope'
+        '401':
+          description: Authentication required
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/ErrorEnvelope'
+        '403':
+          description: Administrator access required
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/ErrorEnvelope'
+        '409':
+          description: Duplicate category slug
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/ErrorEnvelope'
+
+  /admin/categories/{id}:
+    patch:
+      operationId: updateAdminCategory
+      tags: [admin]
+      summary: Update a category
+      parameters:
+        - name: id
+          in: path
+          required: true
+          schema:
+            type: integer
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema:
+              $ref: '#/components/schemas/AdminCategoryUpdateRequest'
+      responses:
+        '200':
+          description: Category updated
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/Category'
+        '400':
+          description: Invalid category
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/ErrorEnvelope'
+        '401':
+          description: Authentication required
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/ErrorEnvelope'
+        '403':
+          description: Administrator access required
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/ErrorEnvelope'
+        '404':
+          description: Category not found
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/ErrorEnvelope'
+        '409':
+          description: Duplicate category slug
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/ErrorEnvelope'
+    delete:
+      operationId: deleteAdminCategory
+      tags: [admin]
+      summary: Delete a category
+      parameters:
+        - name: id
+          in: path
+          required: true
+          schema:
+            type: integer
+      responses:
+        '200':
+          description: Category deleted
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/DeleteSuccess'
+        '401':
+          description: Authentication required
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/ErrorEnvelope'
+        '403':
+          description: Administrator access required
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/ErrorEnvelope'
+        '404':
+          description: Category not found
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/ErrorEnvelope'
+        '409':
+          description: Category still has products
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/ErrorEnvelope'
+
+  /admin/affiliate-links:
+    get:
+      operationId: listAdminAffiliateLinks
+      tags: [admin]
+      summary: List affiliate links
+      responses:
+        '200':
+          description: Affiliate links
+          content:
+            application/json:
+              schema:
+                type: array
+                items:
+                  $ref: '#/components/schemas/AffiliateLink'
+        '401':
+          description: Authentication required
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/ErrorEnvelope'
+        '403':
+          description: Administrator access required
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/ErrorEnvelope'
+
+  /admin/affiliate-links/{productId}:
+    patch:
+      operationId: updateAdminAffiliateLink
+      tags: [admin]
+      summary: Update an affiliate link
+      parameters:
+        - name: productId
+          in: path
+          required: true
+          schema:
+            type: integer
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema:
+              $ref: '#/components/schemas/AdminAffiliateLinkUpdateRequest'
+      responses:
+        '200':
+          description: Affiliate link updated
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/AffiliateLink'
+        '400':
+          description: Invalid affiliate URL
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/ErrorEnvelope'
+        '401':
+          description: Authentication required
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/ErrorEnvelope'
+        '403':
+          description: Administrator access required
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/ErrorEnvelope'
+        '404':
+          description: Product not found
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/ErrorEnvelope'
+
+  /admin/reviews:
+    get:
+      operationId: listAdminReviews
+      tags: [admin]
+      summary: List reviews for administration
+      parameters:
+        - name: search
+          in: query
+          required: false
+          schema:
+            type: string
+        - name: rating
+          in: query
+          required: false
+          schema:
+            type: integer
+            minimum: 1
+            maximum: 5
+      responses:
+        '200':
+          description: Reviews
+          content:
+            application/json:
+              schema:
+                type: array
+                items:
+                  $ref: '#/components/schemas/AdminReview'
+        '401':
+          description: Authentication required
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/ErrorEnvelope'
+        '403':
+          description: Administrator access required
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/ErrorEnvelope'
+
+  /admin/reviews/{id}:
+    patch:
+      operationId: updateAdminReview
+      tags: [admin]
+      summary: Update a review
+      parameters:
+        - name: id
+          in: path
+          required: true
+          schema:
+            type: integer
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema:
+              $ref: '#/components/schemas/AdminReviewUpdateRequest'
+      responses:
+        '200':
+          description: Review updated
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/AdminReview'
+        '400':
+          description: Invalid review
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/ErrorEnvelope'
+        '401':
+          description: Authentication required
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/ErrorEnvelope'
+        '403':
+          description: Administrator access required
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/ErrorEnvelope'
+        '404':
+          description: Review not found
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/ErrorEnvelope'
+    delete:
+      operationId: deleteAdminReview
+      tags: [admin]
+      summary: Delete a review
+      parameters:
+        - name: id
+          in: path
+          required: true
+          schema:
+            type: integer
+      responses:
+        '200':
+          description: Review deleted
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/DeleteSuccess'
+        '401':
+          description: Authentication required
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/ErrorEnvelope'
+        '403':
+          description: Administrator access required
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/ErrorEnvelope'
+        '404':
+          description: Review not found
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/ErrorEnvelope'
+
 components:
   parameters:
     AuthorizationSessionHeader:
@@ -517,7 +1077,7 @@ components:
 
     Product:
       type: object
-      required: [id, slug, title, price, category, imageUrl, affiliateUrl, featured]
+      required: [id, slug, title, description, specifications, price, category, imageUrl, imageUrls, storeName, affiliateUrl, discountPercent, featured]
       properties:
         id:
           type: integer
@@ -527,6 +1087,10 @@ components:
           type: string
         description:
           type: ["string", "null"]
+        specifications:
+          type: ["object", "null"]
+          additionalProperties:
+            type: string
         price:
           type: number
         originalPrice:
@@ -535,8 +1099,16 @@ components:
           type: string
         imageUrl:
           type: string
+        imageUrls:
+          type: array
+          items:
+            type: string
+        storeName:
+          type: ["string", "null"]
         affiliateUrl:
           type: string
+        discountPercent:
+          type: ["number", "null"]
         rating:
           type: ["number", "null"]
         reviewCount:
@@ -549,12 +1121,6 @@ components:
     ProductDetail:
       allOf:
         - $ref: "#/components/schemas/Product"
-        - type: object
-          properties:
-            specifications:
-              type: ["object", "null"]
-              additionalProperties:
-                type: string
 
     Category:
       type: object
@@ -644,6 +1210,8 @@ components:
           type: [string, 'null']
         profileImageUrl:
           type: [string, 'null']
+        isAdmin:
+          type: boolean
 
     AuthUserEnvelope:
       type: object
@@ -768,3 +1336,151 @@ components:
         success:
           type: boolean
           const: true
+
+    DeleteSuccess:
+      type: object
+      required: [success]
+      properties:
+        success:
+          type: boolean
+          const: true
+
+    AdminProductCreateRequest:
+      type: object
+      required: [title, slug, price, category, imageUrl, affiliateUrl]
+      properties:
+        title: { type: string }
+        slug: { type: string }
+        description: { type: ["string", "null"] }
+        specifications:
+          type: ["object", "null"]
+          additionalProperties: { type: string }
+        price: { type: number }
+        originalPrice: { type: ["number", "null"] }
+        category: { type: string }
+        imageUrl: { type: string }
+        imageUrls:
+          type: ["array", "null"]
+          items: { type: string }
+        storeName: { type: ["string", "null"] }
+        affiliateUrl: { type: string, format: uri }
+        rating: { type: ["number", "null"] }
+        reviewCount: { type: ["integer", "null"] }
+        badge: { type: ["string", "null"] }
+        featured: { type: boolean }
+
+    AdminProductUpdateRequest:
+      description: Partial product update; omitted fields remain unchanged.
+      type: object
+      properties:
+        title: { type: string }
+        slug: { type: string }
+        description: { type: ["string", "null"] }
+        specifications:
+          type: ["object", "null"]
+          additionalProperties: { type: string }
+        price: { type: number }
+        originalPrice: { type: ["number", "null"] }
+        category: { type: string }
+        imageUrl: { type: string }
+        imageUrls:
+          type: ["array", "null"]
+          items: { type: string }
+        storeName: { type: ["string", "null"] }
+        affiliateUrl: { type: string, format: uri }
+        rating: { type: ["number", "null"] }
+        reviewCount: { type: ["integer", "null"] }
+        badge: { type: ["string", "null"] }
+        featured: { type: boolean }
+
+    AdminCategoryCreateRequest:
+      type: object
+      required: [name, slug]
+      properties:
+        name: { type: string }
+        slug: { type: string }
+        icon: { type: ["string", "null"] }
+
+    AdminCategoryUpdateRequest:
+      type: object
+      properties:
+        name: { type: string }
+        slug: { type: string }
+        icon: { type: ["string", "null"] }
+
+    AdminAffiliateLinkUpdateRequest:
+      type: object
+      required: [affiliateUrl]
+      properties:
+        affiliateUrl: { type: string, format: uri }
+
+    AdminReviewUpdateRequest:
+      type: object
+      properties:
+        reviewerName: { type: string }
+        reviewerLocation: { type: ["string", "null"] }
+        rating: { type: integer, minimum: 1, maximum: 5 }
+        title: { type: string }
+        body: { type: string }
+        verifiedPurchase: { type: boolean }
+
+    AffiliateLink:
+      type: object
+      required: [productId, productTitle, category, price, affiliateUrl]
+      properties:
+        productId: { type: integer }
+        productTitle: { type: string }
+        category: { type: string }
+        price: { type: number }
+        affiliateUrl: { type: string, format: uri }
+
+    AdminReview:
+      type: object
+      required: [id, productId, productTitle, productSlug, reviewerName, rating, title, body, verifiedPurchase, helpfulCount, createdAt]
+      properties:
+        id: { type: integer }
+        productId: { type: integer }
+        productTitle: { type: string }
+        productSlug: { type: string }
+        reviewerName: { type: string }
+        reviewerLocation: { type: ["string", "null"] }
+        rating: { type: integer }
+        title: { type: string }
+        body: { type: string }
+        verifiedPurchase: { type: boolean }
+        helpfulCount: { type: integer }
+        createdAt: { type: string, format: date-time }
+
+    AdminDashboard:
+      type: object
+      required: [totalProducts, totalCategories, totalReviews, featuredProducts, averagePrice, averageRating, totalUsers, activePriceAlerts, categoryBreakdown, reviewsByRating, recentProducts]
+      properties:
+        totalProducts: { type: integer }
+        totalCategories: { type: integer }
+        totalReviews: { type: integer }
+        featuredProducts: { type: integer }
+        averagePrice: { type: ["number", "null"] }
+        averageRating: { type: ["number", "null"] }
+        totalUsers: { type: integer }
+        activePriceAlerts: { type: integer }
+        categoryBreakdown:
+          type: array
+          items:
+            type: object
+            required: [category, count]
+            properties:
+              category: { type: string }
+              count: { type: integer }
+        reviewsByRating:
+          type: object
+          required: ["1", "2", "3", "4", "5"]
+          properties:
+            "1": { type: integer }
+            "2": { type: integer }
+            "3": { type: integer }
+            "4": { type: integer }
+            "5": { type: integer }
+        recentProducts:
+          type: array
+          items:
+            $ref: '#/components/schemas/Product'

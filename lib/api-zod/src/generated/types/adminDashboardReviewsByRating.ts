@@ -6,7 +6,10 @@
  * OpenAPI spec version: 0.1.0
  */
 
-/**
- * @nullable
- */
-export type ProductDetailSpecifications = {[key: string]: string} | null;
+export type AdminDashboardReviewsByRating = {
+  '1': number;
+  '2': number;
+  '3': number;
+  '4': number;
+  '5': number;
+};

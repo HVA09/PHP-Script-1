@@ -79,6 +79,9 @@ export function ProductCard({ product, hideCompare = false }: ProductCardProps) 
 
       <CardContent className="flex-1 p-5">
         <div className="space-y-1 mb-3">
+          {product.storeName && (
+            <p className="text-[11px] font-medium text-muted-foreground">{product.storeName}</p>
+          )}
           <span className={`inline-block text-[11px] font-semibold uppercase tracking-wider px-2 py-0.5 rounded-full ${categoryColor}`}>
             {product.category.replace(/-/g, " ")}
           </span>

@@ -11,6 +11,7 @@ import {
   ShoppingBag,
   Package,
   Bell,
+  ShieldCheck,
 } from "lucide-react";
 import { Button } from "@/components/ui/button";
 import { Badge } from "@/components/ui/badge";
@@ -219,11 +220,12 @@ export default function Profile() {
           </section>
 
           {/* Quick links */}
-          <section className="grid grid-cols-1 sm:grid-cols-3 gap-4">
+          <section className={`grid grid-cols-1 gap-4 ${user?.isAdmin ? "sm:grid-cols-4" : "sm:grid-cols-3"}`}>
             {[
               { href: "/products", icon: Package, label: "Browse All Deals", sub: "Find today's best deals" },
               { href: "/wishlist", icon: Heart, label: "Full Wishlist", sub: "All your saved products" },
               { href: "/alerts", icon: Bell, label: "Price Alerts", sub: "Track target prices" },
+              ...(user?.isAdmin ? [{ href: "/admin", icon: ShieldCheck, label: "Admin Workspace", sub: "Manage the DealHub catalog" }] : []),
             ].map(({ href, icon: Icon, label, sub }) => (
               <Link key={href} href={href}>
                 <div className="group flex items-center gap-4 p-4 rounded-xl border bg-card hover:border-primary/40 hover:bg-muted/40 transition-all cursor-pointer">

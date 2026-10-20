@@ -19,9 +19,14 @@ function mapProduct(p: typeof productsTable.$inferSelect) {
     originalPrice: p.originalPrice ? parseFloat(p.originalPrice) : null,
     category: p.category,
     imageUrl: p.imageUrl,
+    imageUrls: p.imageUrls?.length ? p.imageUrls : [p.imageUrl],
+    storeName: p.storeName ?? null,
     affiliateUrl: p.affiliateUrl,
     rating: p.rating ? parseFloat(p.rating) : null,
     reviewCount: p.reviewCount,
+    discountPercent: p.originalPrice && Number(p.originalPrice) > Number(p.price)
+      ? Math.round(100 - (Number(p.price) / Number(p.originalPrice)) * 100)
+      : null,
     badge: p.badge,
     featured: p.featured,
   };

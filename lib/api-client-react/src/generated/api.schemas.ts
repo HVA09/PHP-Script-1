@@ -9,18 +9,30 @@ export interface HealthStatus {
   status: string;
 }
 
+/**
+ * @nullable
+ */
+export type ProductSpecifications = {[key: string]: string} | null;
+
 export interface Product {
   id: number;
   slug: string;
   title: string;
   /** @nullable */
-  description?: string | null;
+  description: string | null;
+  /** @nullable */
+  specifications: ProductSpecifications;
   price: number;
   /** @nullable */
   originalPrice?: number | null;
   category: string;
   imageUrl: string;
+  imageUrls: string[];
+  /** @nullable */
+  storeName: string | null;
   affiliateUrl: string;
+  /** @nullable */
+  discountPercent: number | null;
   /** @nullable */
   rating?: number | null;
   /** @nullable */
@@ -30,15 +42,7 @@ export interface Product {
   featured: boolean;
 }
 
-/**
- * @nullable
- */
-export type ProductDetailSpecifications = {[key: string]: string} | null;
-
-export type ProductDetail = Product & {
-  /** @nullable */
-  specifications?: ProductDetailSpecifications;
-};
+export type ProductDetail = Product;
 
 export interface Category {
   id: number;
@@ -95,6 +99,7 @@ export interface AuthUser {
   lastName: string | null;
   /** @nullable */
   profileImageUrl: string | null;
+  isAdmin?: boolean;
 }
 
 export interface AuthUserEnvelope {
@@ -162,6 +167,161 @@ export const DeletePriceAlertResponseValue = {
 } as const;
 export type DeletePriceAlertResponse = typeof DeletePriceAlertResponseValue;
 
+export const DeleteSuccessValue = {
+  success: true,
+} as const;
+export type DeleteSuccess = typeof DeleteSuccessValue;
+
+/**
+ * @nullable
+ */
+export type AdminProductCreateRequestSpecifications = {[key: string]: string} | null;
+
+export interface AdminProductCreateRequest {
+  title: string;
+  slug: string;
+  /** @nullable */
+  description?: string | null;
+  /** @nullable */
+  specifications?: AdminProductCreateRequestSpecifications;
+  price: number;
+  /** @nullable */
+  originalPrice?: number | null;
+  category: string;
+  imageUrl: string;
+  /** @nullable */
+  imageUrls?: string[] | null;
+  /** @nullable */
+  storeName?: string | null;
+  affiliateUrl: string;
+  /** @nullable */
+  rating?: number | null;
+  /** @nullable */
+  reviewCount?: number | null;
+  /** @nullable */
+  badge?: string | null;
+  featured?: boolean;
+}
+
+/**
+ * @nullable
+ */
+export type AdminProductUpdateRequestSpecifications = {[key: string]: string} | null;
+
+/**
+ * Partial product update; omitted fields remain unchanged.
+ */
+export interface AdminProductUpdateRequest {
+  title?: string;
+  slug?: string;
+  /** @nullable */
+  description?: string | null;
+  /** @nullable */
+  specifications?: AdminProductUpdateRequestSpecifications;
+  price?: number;
+  /** @nullable */
+  originalPrice?: number | null;
+  category?: string;
+  imageUrl?: string;
+  /** @nullable */
+  imageUrls?: string[] | null;
+  /** @nullable */
+  storeName?: string | null;
+  affiliateUrl?: string;
+  /** @nullable */
+  rating?: number | null;
+  /** @nullable */
+  reviewCount?: number | null;
+  /** @nullable */
+  badge?: string | null;
+  featured?: boolean;
+}
+
+export interface AdminCategoryCreateRequest {
+  name: string;
+  slug: string;
+  /** @nullable */
+  icon?: string | null;
+}
+
+export interface AdminCategoryUpdateRequest {
+  name?: string;
+  slug?: string;
+  /** @nullable */
+  icon?: string | null;
+}
+
+export interface AdminAffiliateLinkUpdateRequest {
+  affiliateUrl: string;
+}
+
+export interface AdminReviewUpdateRequest {
+  reviewerName?: string;
+  /** @nullable */
+  reviewerLocation?: string | null;
+  /**
+     * @minimum 1
+     * @maximum 5
+     */
+  rating?: number;
+  title?: string;
+  body?: string;
+  verifiedPurchase?: boolean;
+}
+
+export interface AffiliateLink {
+  productId: number;
+  productTitle: string;
+  category: string;
+  price: number;
+  affiliateUrl: string;
+}
+
+export interface AdminReview {
+  id: number;
+  productId: number;
+  productTitle: string;
+  productSlug: string;
+  reviewerName: string;
+  /** @nullable */
+  reviewerLocation?: string | null;
+  rating: number;
+  title: string;
+  body: string;
+  verifiedPurchase: boolean;
+  helpfulCount: number;
+  createdAt: string;
+}
+
+export type AdminDashboardCategoryBreakdownItem = {
+  category: string;
+  count: number;
+};
+
+export type AdminDashboardReviewsByRating = {
+  '1': number;
+  '2': number;
+  '3': number;
+  '4': number;
+  '5': number;
+};
+
+export interface AdminDashboard {
+  totalProducts: number;
+  totalCategories: number;
+  totalReviews: number;
+  featuredProducts: number;
+  /** @nullable */
+  averagePrice: number | null;
+  /** @nullable */
+  averageRating: number | null;
+  totalUsers: number;
+  activePriceAlerts: number;
+  categoryBreakdown: AdminDashboardCategoryBreakdownItem[];
+  reviewsByRating: AdminDashboardReviewsByRating;
+  recentProducts: Product[];
+}
+
 /**
  * Opaque session token — Bearer <sid>.
  */
@@ -181,5 +341,19 @@ export type HandleBrowserLoginCallbackParams = {
 code?: string;
 state?: string;
 iss?: string;
+};
+
+export type ListAdminProductsParams = {
+search?: string;
+category?: string;
+};
+
+export type ListAdminReviewsParams = {
+search?: string;
+/**
+ * @minimum 1
+ * @maximum 5
+ */
+rating?: number;
 };
 

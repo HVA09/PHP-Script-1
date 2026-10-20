@@ -1,21 +1,39 @@
 <!DOCTYPE html>
-<html lang="en">
+<html lang="en" dir="ltr">
   <head>
     <meta charset="UTF-8" />
     <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1" />
-    <title>Affiliate Products</title>
-    <meta name="description" content="Affiliate Products — built on Replit. Update this description to reflect the app." />
+    <title>DealHub — Curated Deals & Product Reviews</title>
+    <meta name="description" content="Discover curated deals, product reviews, and better prices across electronics, fashion, home goods, and more with DealHub." />
     <meta name="robots" content="index, follow" />
-    <meta property="og:title" content="Affiliate Products" />
-    <meta property="og:description" content="Affiliate Products — built on Replit. Update this description to reflect the app." />
+    <meta name="theme-color" content="#f45b3c" />
+    <meta property="og:title" content="DealHub — Curated Deals & Product Reviews" />
+    <meta property="og:description" content="Discover curated deals, product reviews, and better prices with DealHub." />
     <meta property="og:type" content="website" />
+    <meta property="og:site_name" content="DealHub" />
+    <meta property="og:image" content="/opengraph.jpg" />
+    <meta property="og:image:alt" content="DealHub curated product deals" />
     <meta name="twitter:card" content="summary_large_image" />
-    <meta name="twitter:title" content="Affiliate Products" />
-    <meta name="twitter:description" content="Affiliate Products — built on Replit. Update this description to reflect the app." />
+    <meta name="twitter:title" content="DealHub — Curated Deals & Product Reviews" />
+    <meta name="twitter:description" content="Discover curated deals, product reviews, and better prices with DealHub." />
+    <meta name="twitter:image" content="/opengraph.jpg" />
     <link rel="icon" type="image/svg+xml" href="/favicon.svg" />
     <link rel="preconnect" href="https://fonts.googleapis.com">
     <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
-    <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700&display=swap" rel="stylesheet">
+    <script type="application/ld+json">
+      {
+        "@context": "https://schema.org",
+        "@type": "WebSite",
+        "name": "DealHub",
+        "description": "Curated deals, product reviews, and better prices.",
+        "url": "/",
+        "potentialAction": {
+          "@type": "SearchAction",
+          "target": "/products?search={search_term_string}",
+          "query-input": "required name=search_term_string"
+        }
+      }
+    </script>
   </head>
   <body>
     <div id="root"></div>

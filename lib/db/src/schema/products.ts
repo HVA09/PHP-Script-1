@@ -12,6 +12,8 @@ export const productsTable = pgTable("products", {
   originalPrice: numeric("original_price", { precision: 10, scale: 2 }),
   category: text("category").notNull(),
   imageUrl: text("image_url").notNull(),
+  imageUrls: jsonb("image_urls").$type<string[]>(),
+  storeName: text("store_name"),
   affiliateUrl: text("affiliate_url").notNull(),
   rating: numeric("rating", { precision: 3, scale: 1 }),
   reviewCount: integer("review_count"),

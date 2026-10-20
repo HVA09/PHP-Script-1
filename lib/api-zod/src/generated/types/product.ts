@@ -5,19 +5,27 @@
  * Affiliate Products API
  * OpenAPI spec version: 0.1.0
  */
+import type { ProductSpecifications } from './productSpecifications';
 
 export interface Product {
   id: number;
   slug: string;
   title: string;
   /** @nullable */
-  description?: string | null;
+  description: string | null;
+  /** @nullable */
+  specifications: ProductSpecifications;
   price: number;
   /** @nullable */
   originalPrice?: number | null;
   category: string;
   imageUrl: string;
+  imageUrls: string[];
+  /** @nullable */
+  storeName: string | null;
   affiliateUrl: string;
+  /** @nullable */
+  discountPercent: number | null;
   /** @nullable */
   rating?: number | null;
   /** @nullable */

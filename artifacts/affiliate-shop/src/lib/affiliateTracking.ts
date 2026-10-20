@@ -5,7 +5,7 @@ export function buildAffiliateUrl(baseUrl: string, productSlug: string): string 
   try {
     const url = new URL(baseUrl);
     url.searchParams.set("utm_source", TRACKING_SOURCE);
-    url.searchParams.set("utm_medium", "affiliate");
+    url.searchParams.set("utm_medium", "referral");
     url.searchParams.set("utm_campaign", productSlug);
     url.searchParams.set("utm_content", "product-page");
     return url.toString();

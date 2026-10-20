@@ -29,12 +29,16 @@ export const ListProductsResponseItem = zod.object({
   "id": zod.number(),
   "slug": zod.string(),
   "title": zod.string(),
-  "description": zod.string().nullish(),
+  "description": zod.string().nullable(),
+  "specifications": zod.record(zod.string(), zod.string()).nullable(),
   "price": zod.number(),
   "originalPrice": zod.number().nullish(),
   "category": zod.string(),
   "imageUrl": zod.string(),
+  "imageUrls": zod.array(zod.string()),
+  "storeName": zod.string().nullable(),
   "affiliateUrl": zod.string(),
+  "discountPercent": zod.number().nullable(),
   "rating": zod.number().nullish(),
   "reviewCount": zod.number().nullish(),
   "badge": zod.string().nullish(),
@@ -65,19 +69,21 @@ export const GetProductBySlugResponse = zod.object({
   "id": zod.number(),
   "slug": zod.string(),
   "title": zod.string(),
-  "description": zod.string().nullish(),
+  "description": zod.string().nullable(),
+  "specifications": zod.record(zod.string(), zod.string()).nullable(),
   "price": zod.number(),
   "originalPrice": zod.number().nullish(),
   "category": zod.string(),
   "imageUrl": zod.string(),
+  "imageUrls": zod.array(zod.string()),
+  "storeName": zod.string().nullable(),
   "affiliateUrl": zod.string(),
+  "discountPercent": zod.number().nullable(),
   "rating": zod.number().nullish(),
   "reviewCount": zod.number().nullish(),
   "badge": zod.string().nullish(),
   "featured": zod.boolean()
-}).and(zod.object({
-  "specifications": zod.record(zod.string(), zod.string()).nullish()
-}))
+})
 
 
 /**
@@ -91,19 +97,21 @@ export const GetProductResponse = zod.object({
   "id": zod.number(),
   "slug": zod.string(),
   "title": zod.string(),
-  "description": zod.string().nullish(),
+  "description": zod.string().nullable(),
+  "specifications": zod.record(zod.string(), zod.string()).nullable(),
   "price": zod.number(),
   "originalPrice": zod.number().nullish(),
   "category": zod.string(),
   "imageUrl": zod.string(),
+  "imageUrls": zod.array(zod.string()),
+  "storeName": zod.string().nullable(),
   "affiliateUrl": zod.string(),
+  "discountPercent": zod.number().nullable(),
   "rating": zod.number().nullish(),
   "reviewCount": zod.number().nullish(),
   "badge": zod.string().nullish(),
   "featured": zod.boolean()
-}).and(zod.object({
-  "specifications": zod.record(zod.string(), zod.string()).nullish()
-}))
+})
 
 
 /**
@@ -163,7 +171,8 @@ export const GetCurrentAuthUserResponse = zod.object({
   "email": zod.string().email().nullable(),
   "firstName": zod.string().nullable(),
   "lastName": zod.string().nullable(),
-  "profileImageUrl": zod.string().nullable()
+  "profileImageUrl": zod.string().nullable(),
+  "isAdmin": zod.boolean().optional()
 }),zod.null()])
 })
 
@@ -370,6 +379,356 @@ export const DeletePriceAlertHeader = zod.object({
 })
 
 export const DeletePriceAlertResponse = zod.object({
+  "success": zod.boolean()
+})
+
+
+/**
+ * @summary Get administrator dashboard analytics
+ */
+export const GetAdminDashboardResponse = zod.object({
+  "totalProducts": zod.number(),
+  "totalCategories": zod.number(),
+  "totalReviews": zod.number(),
+  "featuredProducts": zod.number(),
+  "averagePrice": zod.number().nullable(),
+  "averageRating": zod.number().nullable(),
+  "totalUsers": zod.number(),
+  "activePriceAlerts": zod.number(),
+  "categoryBreakdown": zod.array(zod.object({
+  "category": zod.string(),
+  "count": zod.number()
+})),
+  "reviewsByRating": zod.object({
+  "1": zod.number(),
+  "2": zod.number(),
+  "3": zod.number(),
+  "4": zod.number(),
+  "5": zod.number()
+}),
+  "recentProducts": zod.array(zod.object({
+  "id": zod.number(),
+  "slug": zod.string(),
+  "title": zod.string(),
+  "description": zod.string().nullable(),
+  "specifications": zod.record(zod.string(), zod.string()).nullable(),
+  "price": zod.number(),
+  "originalPrice": zod.number().nullish(),
+  "category": zod.string(),
+  "imageUrl": zod.string(),
+  "imageUrls": zod.array(zod.string()),
+  "storeName": zod.string().nullable(),
+  "affiliateUrl": zod.string(),
+  "discountPercent": zod.number().nullable(),
+  "rating": zod.number().nullish(),
+  "reviewCount": zod.number().nullish(),
+  "badge": zod.string().nullish(),
+  "featured": zod.boolean()
+}))
+})
+
+
+/**
+ * @summary List products for administration
+ */
+export const ListAdminProductsQueryParams = zod.object({
+  "search": zod.coerce.string().optional(),
+  "category": zod.coerce.string().optional()
+})
+
+export const ListAdminProductsResponseItem = zod.object({
+  "id": zod.number(),
+  "slug": zod.string(),
+  "title": zod.string(),
+  "description": zod.string().nullable(),
+  "specifications": zod.record(zod.string(), zod.string()).nullable(),
+  "price": zod.number(),
+  "originalPrice": zod.number().nullish(),
+  "category": zod.string(),
+  "imageUrl": zod.string(),
+  "imageUrls": zod.array(zod.string()),
+  "storeName": zod.string().nullable(),
+  "affiliateUrl": zod.string(),
+  "discountPercent": zod.number().nullable(),
+  "rating": zod.number().nullish(),
+  "reviewCount": zod.number().nullish(),
+  "badge": zod.string().nullish(),
+  "featured": zod.boolean()
+})
+export const ListAdminProductsResponse = zod.array(ListAdminProductsResponseItem)
+
+
+/**
+ * @summary Create a product
+ */
+export const CreateAdminProductBody = zod.object({
+  "title": zod.string(),
+  "slug": zod.string(),
+  "description": zod.string().nullish(),
+  "specifications": zod.record(zod.string(), zod.string()).nullish(),
+  "price": zod.number(),
+  "originalPrice": zod.number().nullish(),
+  "category": zod.string(),
+  "imageUrl": zod.string(),
+  "imageUrls": zod.array(zod.string()).nullish(),
+  "storeName": zod.string().nullish(),
+  "affiliateUrl": zod.string().url(),
+  "rating": zod.number().nullish(),
+  "reviewCount": zod.number().nullish(),
+  "badge": zod.string().nullish(),
+  "featured": zod.boolean().optional()
+})
+
+export const CreateAdminProductResponse = zod.object({
+  "id": zod.number(),
+  "slug": zod.string(),
+  "title": zod.string(),
+  "description": zod.string().nullable(),
+  "specifications": zod.record(zod.string(), zod.string()).nullable(),
+  "price": zod.number(),
+  "originalPrice": zod.number().nullish(),
+  "category": zod.string(),
+  "imageUrl": zod.string(),
+  "imageUrls": zod.array(zod.string()),
+  "storeName": zod.string().nullable(),
+  "affiliateUrl": zod.string(),
+  "discountPercent": zod.number().nullable(),
+  "rating": zod.number().nullish(),
+  "reviewCount": zod.number().nullish(),
+  "badge": zod.string().nullish(),
+  "featured": zod.boolean()
+})
+
+
+/**
+ * @summary Update a product
+ */
+export const UpdateAdminProductParams = zod.object({
+  "id": zod.coerce.number()
+})
+
+export const UpdateAdminProductBody = zod.object({
+  "title": zod.string().optional(),
+  "slug": zod.string().optional(),
+  "description": zod.string().nullish(),
+  "specifications": zod.record(zod.string(), zod.string()).nullish(),
+  "price": zod.number().optional(),
+  "originalPrice": zod.number().nullish(),
+  "category": zod.string().optional(),
+  "imageUrl": zod.string().optional(),
+  "imageUrls": zod.array(zod.string()).nullish(),
+  "storeName": zod.string().nullish(),
+  "affiliateUrl": zod.string().url().optional(),
+  "rating": zod.number().nullish(),
+  "reviewCount": zod.number().nullish(),
+  "badge": zod.string().nullish(),
+  "featured": zod.boolean().optional()
+}).describe('Partial product update; omitted fields remain unchanged.')
+
+export const UpdateAdminProductResponse = zod.object({
+  "id": zod.number(),
+  "slug": zod.string(),
+  "title": zod.string(),
+  "description": zod.string().nullable(),
+  "specifications": zod.record(zod.string(), zod.string()).nullable(),
+  "price": zod.number(),
+  "originalPrice": zod.number().nullish(),
+  "category": zod.string(),
+  "imageUrl": zod.string(),
+  "imageUrls": zod.array(zod.string()),
+  "storeName": zod.string().nullable(),
+  "affiliateUrl": zod.string(),
+  "discountPercent": zod.number().nullable(),
+  "rating": zod.number().nullish(),
+  "reviewCount": zod.number().nullish(),
+  "badge": zod.string().nullish(),
+  "featured": zod.boolean()
+})
+
+
+/**
+ * @summary Delete a product
+ */
+export const DeleteAdminProductParams = zod.object({
+  "id": zod.coerce.number()
+})
+
+export const DeleteAdminProductResponse = zod.object({
+  "success": zod.boolean()
+})
+
+
+/**
+ * @summary List categories for administration
+ */
+export const ListAdminCategoriesResponseItem = zod.object({
+  "id": zod.number(),
+  "name": zod.string(),
+  "slug": zod.string(),
+  "productCount": zod.number(),
+  "icon": zod.string().nullish()
+})
+export const ListAdminCategoriesResponse = zod.array(ListAdminCategoriesResponseItem)
+
+
+/**
+ * @summary Create a category
+ */
+export const CreateAdminCategoryBody = zod.object({
+  "name": zod.string(),
+  "slug": zod.string(),
+  "icon": zod.string().nullish()
+})
+
+export const CreateAdminCategoryResponse = zod.object({
+  "id": zod.number(),
+  "name": zod.string(),
+  "slug": zod.string(),
+  "productCount": zod.number(),
+  "icon": zod.string().nullish()
+})
+
+
+/**
+ * @summary Update a category
+ */
+export const UpdateAdminCategoryParams = zod.object({
+  "id": zod.coerce.number()
+})
+
+export const UpdateAdminCategoryBody = zod.object({
+  "name": zod.string().optional(),
+  "slug": zod.string().optional(),
+  "icon": zod.string().nullish()
+})
+
+export const UpdateAdminCategoryResponse = zod.object({
+  "id": zod.number(),
+  "name": zod.string(),
+  "slug": zod.string(),
+  "productCount": zod.number(),
+  "icon": zod.string().nullish()
+})
+
+
+/**
+ * @summary Delete a category
+ */
+export const DeleteAdminCategoryParams = zod.object({
+  "id": zod.coerce.number()
+})
+
+export const DeleteAdminCategoryResponse = zod.object({
+  "success": zod.boolean()
+})
+
+
+/**
+ * @summary List affiliate links
+ */
+export const ListAdminAffiliateLinksResponseItem = zod.object({
+  "productId": zod.number(),
+  "productTitle": zod.string(),
+  "category": zod.string(),
+  "price": zod.number(),
+  "affiliateUrl": zod.string().url()
+})
+export const ListAdminAffiliateLinksResponse = zod.array(ListAdminAffiliateLinksResponseItem)
+
+
+/**
+ * @summary Update an affiliate link
+ */
+export const UpdateAdminAffiliateLinkParams = zod.object({
+  "productId": zod.coerce.number()
+})
+
+export const UpdateAdminAffiliateLinkBody = zod.object({
+  "affiliateUrl": zod.string().url()
+})
+
+export const UpdateAdminAffiliateLinkResponse = zod.object({
+  "productId": zod.number(),
+  "productTitle": zod.string(),
+  "category": zod.string(),
+  "price": zod.number(),
+  "affiliateUrl": zod.string().url()
+})
+
+
+/**
+ * @summary List reviews for administration
+ */
+export const listAdminReviewsQueryRatingMax = 5;
+
+
+
+export const ListAdminReviewsQueryParams = zod.object({
+  "search": zod.coerce.string().optional(),
+  "rating": zod.coerce.number().min(1).max(listAdminReviewsQueryRatingMax).optional()
+})
+
+export const ListAdminReviewsResponseItem = zod.object({
+  "id": zod.number(),
+  "productId": zod.number(),
+  "productTitle": zod.string(),
+  "productSlug": zod.string(),
+  "reviewerName": zod.string(),
+  "reviewerLocation": zod.string().nullish(),
+  "rating": zod.number(),
+  "title": zod.string(),
+  "body": zod.string(),
+  "verifiedPurchase": zod.boolean(),
+  "helpfulCount": zod.number(),
+  "createdAt": zod.coerce.date()
+})
+export const ListAdminReviewsResponse = zod.array(ListAdminReviewsResponseItem)
+
+
+/**
+ * @summary Update a review
+ */
+export const UpdateAdminReviewParams = zod.object({
+  "id": zod.coerce.number()
+})
+
+export const updateAdminReviewBodyRatingMax = 5;
+
+
+
+export const UpdateAdminReviewBody = zod.object({
+  "reviewerName": zod.string().optional(),
+  "reviewerLocation": zod.string().nullish(),
+  "rating": zod.number().min(1).max(updateAdminReviewBodyRatingMax).optional(),
+  "title": zod.string().optional(),
+  "body": zod.string().optional(),
+  "verifiedPurchase": zod.boolean().optional()
+})
+
+export const UpdateAdminReviewResponse = zod.object({
+  "id": zod.number(),
+  "productId": zod.number(),
+  "productTitle": zod.string(),
+  "productSlug": zod.string(),
+  "reviewerName": zod.string(),
+  "reviewerLocation": zod.string().nullish(),
+  "rating": zod.number(),
+  "title": zod.string(),
+  "body": zod.string(),
+  "verifiedPurchase": zod.boolean(),
+  "helpfulCount": zod.number(),
+  "createdAt": zod.coerce.date()
+})
+
+
+/**
+ * @summary Delete a review
+ */
+export const DeleteAdminReviewParams = zod.object({
+  "id": zod.coerce.number()
+})
+
+export const DeleteAdminReviewResponse = zod.object({
   "success": zod.boolean()
 })
 

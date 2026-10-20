@@ -3,13 +3,14 @@ import { Link, useLocation } from "wouter";
 import {
   Search, ShoppingBag, Menu, X, Laptop, Shirt, Home,
   Dumbbell, Sparkles, BookOpen, Heart, LayoutGrid, GitCompare,
-  User, LogIn, LogOut,
+  User, LogIn, LogOut, Globe2,
 } from "lucide-react";
 import { Input } from "@/components/ui/input";
 import { Button } from "@/components/ui/button";
 import { useWishlist } from "@/context/WishlistContext";
 import { useCompare } from "@/context/CompareContext";
 import { useAuthContext } from "@/context/AuthContext";
+import { useLanguage } from "@/context/LanguageContext";
 import { useListProducts, getListProductsQueryKey } from "@workspace/api-client-react";
 
 function InstantSearchDropdown({
@@ -56,6 +57,10 @@ function InstantSearchDropdown({
           <img
             src={product.imageUrl}
             alt={product.title}
+            width={40}
+            height={40}
+            loading="lazy"
+            decoding="async"
             className="w-10 h-10 rounded-lg object-cover shrink-0 border mix-blend-multiply"
           />
           <div className="flex-1 min-w-0">
@@ -93,6 +98,7 @@ export function Header() {
   const { count: wishlistCount } = useWishlist();
   const { count: compareCount } = useCompare();
   const { user, isAuthenticated, isLoading: authLoading, login, logout } = useAuthContext();
+  const { t, toggleLanguage, language } = useLanguage();
   const searchRef = useRef<HTMLDivElement>(null);
 
   useEffect(() => {
@@ -115,20 +121,20 @@ export function Header() {
   };
 
   const navLinks = [
-    { href: "/", label: "Home" },
-    { href: "/products", label: "All Deals" },
-    { href: "/categories", label: "Categories", icon: LayoutGrid },
-    { href: "/blog", label: "Blog" },
-    { href: "/about", label: "About" },
+    { href: "/", label: t("nav.home") },
+    { href: "/products", label: t("nav.deals") },
+    { href: "/categories", label: t("nav.categories"), icon: LayoutGrid },
+    { href: "/blog", label: t("nav.blog") },
+    { href: "/about", label: t("nav.about") },
   ];
 
   const categoryLinks = [
-    { href: "/products?category=electronics", label: "Electronics", icon: Laptop },
-    { href: "/products?category=fashion", label: "Fashion", icon: Shirt },
-    { href: "/products?category=home-kitchen", label: "Home", icon: Home },
-    { href: "/products?category=sports-outdoors", label: "Sports", icon: Dumbbell },
-    { href: "/products?category=beauty-health", label: "Beauty", icon: Sparkles },
-    { href: "/products?category=books", label: "Books", icon: BookOpen },
+    { href: "/products?category=electronics", label: t("nav.electronics"), icon: Laptop },
+    { href: "/products?category=fashion", label: t("nav.fashion"), icon: Shirt },
+    { href: "/products?category=home-kitchen", label: t("nav.homeCategory"), icon: Home },
+    { href: "/products?category=sports-outdoors", label: t("nav.sports"), icon: Dumbbell },
+    { href: "/products?category=beauty-health", label: t("nav.beauty"), icon: Sparkles },
+    { href: "/products?category=books", label: t("nav.books"), icon: BookOpen },
   ];
 
   const displayName = user
@@ -141,7 +147,7 @@ export function Header() {
   return (
     <header className="sticky top-0 z-50 w-full shadow-sm">
       <div className="bg-primary text-primary-foreground text-center py-1.5 text-xs font-medium tracking-wide">
-        Free shipping on orders over $50 &nbsp;|&nbsp; Deals updated daily
+              {t("header.shipping")} &nbsp;|&nbsp; {t("header.updated")}
       </div>
       <div className="border-b bg-background/95 backdrop-blur supports-[backdrop-filter]:bg-background/60">
         <div className="container mx-auto px-4 h-16 flex items-center justify-between gap-4">
@@ -168,7 +174,7 @@ export function Header() {
           </div>
 
           {/* Category quick-nav */}
-          <nav className="hidden xl:flex items-center gap-0.5 border-l pl-4 shrink-0">
+          <nav className="hidden 2xl:flex items-center gap-0.5 border-l pl-4 shrink-0">
             {categoryLinks.map((link) => (
               <Link
                 key={link.href}
@@ -189,7 +195,7 @@ export function Header() {
                 <Search className="absolute left-3 top-1/2 -translate-y-1/2 h-4 w-4 text-muted-foreground" />
                 <Input
                   type="search"
-                  placeholder="Search deals..."
+                  placeholder={t("header.search")}
                   className="w-full pl-9 border-border bg-background focus-visible:ring-primary h-9 text-sm"
                   value={searchQuery}
                   onChange={(e) => {
@@ -256,10 +262,20 @@ export function Header() {
                   className="hidden md:flex gap-1.5 h-9"
                 >
                   <LogIn className="w-3.5 h-3.5" />
-                  Log in
+                  {t("header.login")}
                 </Button>
               )
             )}
+
+            <button
+              type="button"
+              onClick={toggleLanguage}
+              className="hidden shrink-0 items-center gap-1.5 rounded-md border px-2.5 py-1.5 text-xs font-semibold text-muted-foreground transition-colors hover:border-primary/40 hover:text-foreground sm:flex"
+              aria-label={language === "en" ? "Switch to Arabic" : "Switch to English"}
+            >
+              <Globe2 className="h-3.5 w-3.5" />
+              {language === "en" ? "عربي" : "EN"}
+            </button>
 
             {/* Mobile hamburger */}
             <Button
@@ -280,7 +296,7 @@ export function Header() {
               <Search className="absolute left-3 top-1/2 -translate-y-1/2 h-4 w-4 text-muted-foreground" />
               <Input
                 type="search"
-                placeholder="Search deals..."
+                 placeholder={t("header.search")}
                 className="w-full pl-9"
                 value={searchQuery}
                 onChange={(e) => setSearchQuery(e.target.value)}
@@ -321,10 +337,10 @@ export function Header() {
                       </div>
                     )}
                     <Link href="/profile" className="flex-1 text-sm font-medium" onClick={() => setIsMobileMenuOpen(false)}>
-                      My Account
+                       {t("header.account")}
                     </Link>
                     <button onClick={() => { setIsMobileMenuOpen(false); logout(); }} className="text-xs text-muted-foreground flex items-center gap-1 hover:text-foreground">
-                      <LogOut className="w-3.5 h-3.5" /> Log out
+                       <LogOut className="w-3.5 h-3.5" /> {t("header.logout")}
                     </button>
                   </div>
                 ) : (
@@ -333,12 +349,21 @@ export function Header() {
                     className="flex items-center gap-2 px-3 py-2 text-sm font-medium rounded-md hover:bg-muted text-primary w-full text-left"
                   >
                     <LogIn className="w-4 h-4" />
-                    Log In / Register
+                     {t("header.login")}
                   </button>
                 )
               )}
               <div className="my-1 border-t" />
-              <p className="px-3 py-1 text-xs text-muted-foreground uppercase tracking-wider font-semibold">Shop by Category</p>
+              <button
+                type="button"
+                onClick={toggleLanguage}
+                className="flex items-center gap-2 px-3 py-2 text-sm font-medium rounded-md hover:bg-muted text-primary w-full text-left"
+              >
+                <Globe2 className="w-4 h-4" />
+                {language === "en" ? "العربية" : "English"}
+              </button>
+              <div className="my-1 border-t" />
+               <p className="px-3 py-1 text-xs text-muted-foreground uppercase tracking-wider font-semibold">{t("header.shopCategory")}</p>
               {categoryLinks.map((link) => (
                 <Link
                   key={link.href}
@@ -352,11 +377,11 @@ export function Header() {
               ))}
               <div className="my-1 border-t" />
               <div className="flex gap-2 px-3">
-                <Link href="/about" className="text-xs text-muted-foreground hover:text-foreground" onClick={() => setIsMobileMenuOpen(false)}>About</Link>
+                 <Link href="/about" className="text-xs text-muted-foreground hover:text-foreground" onClick={() => setIsMobileMenuOpen(false)}>{t("nav.about")}</Link>
                 <span className="text-muted-foreground/40">·</span>
-                <Link href="/contact" className="text-xs text-muted-foreground hover:text-foreground" onClick={() => setIsMobileMenuOpen(false)}>Contact</Link>
+                 <Link href="/contact" className="text-xs text-muted-foreground hover:text-foreground" onClick={() => setIsMobileMenuOpen(false)}>{t("footer.contact")}</Link>
                 <span className="text-muted-foreground/40">·</span>
-                <Link href="/privacy" className="text-xs text-muted-foreground hover:text-foreground" onClick={() => setIsMobileMenuOpen(false)}>Privacy</Link>
+                 <Link href="/privacy" className="text-xs text-muted-foreground hover:text-foreground" onClick={() => setIsMobileMenuOpen(false)}>{t("footer.privacy")}</Link>
               </div>
             </nav>
           </div>

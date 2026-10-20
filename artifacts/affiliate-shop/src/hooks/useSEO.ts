@@ -7,6 +7,7 @@ interface SEOProps {
   image?: string;
   canonical?: string;
   type?: "website" | "product" | "article";
+  noIndex?: boolean;
 }
 
 function setMeta(nameOrProp: string, content: string, isProp = false) {
@@ -37,6 +38,7 @@ export function useSEO({
   image = "https://images.unsplash.com/photo-1607082348824-0a96f2a4b9da?w=1200&q=80",
   canonical,
   type = "website",
+  noIndex = false,
 }: SEOProps) {
   useEffect(() => {
     const siteName = "DealHub";
@@ -51,12 +53,16 @@ export function useSEO({
     setMeta("og:type", type, true);
     setMeta("og:site_name", siteName, true);
     setMeta("og:image", image, true);
+    if (canonical) setMeta("og:url", canonical, true);
 
     setMeta("twitter:card", "summary_large_image");
     setMeta("twitter:title", fullTitle);
     setMeta("twitter:description", description);
     setMeta("twitter:image", image);
+    setMeta("robots", noIndex ? "noindex, nofollow" : "index, follow");
 
-    if (canonical) setLink("canonical", canonical);
-  }, [title, description, keywords, image, canonical, type]);
+    if (canonical) {
+      setLink("canonical", canonical);
+    }
+  }, [title, description, keywords, image, canonical, type, noIndex]);
 }

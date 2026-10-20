@@ -6,6 +6,19 @@
  * OpenAPI spec version: 0.1.0
  */
 
+export * from './adminAffiliateLinkUpdateRequest';
+export * from './adminCategoryCreateRequest';
+export * from './adminCategoryUpdateRequest';
+export * from './adminDashboard';
+export * from './adminDashboardCategoryBreakdownItem';
+export * from './adminDashboardReviewsByRating';
+export * from './adminProductCreateRequest';
+export * from './adminProductCreateRequestSpecifications';
+export * from './adminProductUpdateRequest';
+export * from './adminProductUpdateRequestSpecifications';
+export * from './adminReview';
+export * from './adminReviewUpdateRequest';
+export * from './affiliateLink';
 export * from './authorizationSessionHeaderParameter';
 export * from './authUser';
 export * from './authUserEnvelope';
@@ -13,9 +26,12 @@ export * from './beginBrowserLoginParams';
 export * from './category';
 export * from './createPriceAlertRequest';
 export * from './deletePriceAlertResponse';
+export * from './deleteSuccess';
 export * from './errorEnvelope';
 export * from './handleBrowserLoginCallbackParams';
 export * from './healthStatus';
+export * from './listAdminProductsParams';
+export * from './listAdminReviewsParams';
 export * from './listProductsParams';
 export * from './logoutSuccess';
 export * from './mobileTokenExchangeRequest';
@@ -24,7 +40,7 @@ export * from './priceAlert';
 export * from './priceAlertList';
 export * from './product';
 export * from './productDetail';
-export * from './productDetailSpecifications';
+export * from './productSpecifications';
 export * from './productStats';
 export * from './recentlyViewed';
 export * from './review';
