@@ -5,4 +5,4 @@ Disallow: /profile
 Disallow: /alerts
 Disallow: /wishlist
 Disallow: /compare
-Sitemap: /sitemap.xml
+# Set VITE_SITE_URL before publishing to add an absolute sitemap URL.

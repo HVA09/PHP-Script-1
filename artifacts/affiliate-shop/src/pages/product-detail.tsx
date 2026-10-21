@@ -14,6 +14,7 @@ import { PriceAlertPanel } from "@/components/product/PriceAlertPanel";
 import { useWishlist } from "@/context/WishlistContext";
 import { useRecentlyViewed } from "@/context/RecentlyViewedContext";
 import { getGalleryImages } from "@/data/productImages";
+import { useSEO } from "@/hooks/useSEO";
 import {
   useGetProductBySlug,
   getGetProductBySlugQueryKey,
@@ -228,40 +229,62 @@ export default function ProductDetail() {
       : getGalleryImages(product.slug, product.imageUrl)
     : [];
 
+  const productRoute = `${(import.meta.env.BASE_URL || "/").replace(/\/$/, "")}/products/${encodeURIComponent(slug)}`;
+  const canonical = typeof window === "undefined" ? undefined : new URL(productRoute, window.location.origin).href;
+  const metaTitle = product?.title
+    ? product.title.length > 49 ? `${product.title.slice(0, 48).trimEnd()}…` : product.title
+    : error ? "Product Not Found" : "Product details";
+  const metaDescription = product
+    ? [
+        product.description,
+        product.storeName ? `Compare offers at ${product.storeName}.` : "",
+        "View specifications and current pricing on DealHub.",
+      ].filter(Boolean).join(" ").replace(/\s+/g, " ").slice(0, 157).trimEnd()
+    : error
+      ? "This product is unavailable. Browse current curated deals across DealHub categories."
+      : "Explore product details, specifications, pricing, and retailer links on DealHub.";
+  useSEO({
+    title: metaTitle,
+    description: metaDescription,
+    image: product?.imageUrl || `${(import.meta.env.BASE_URL || "/").replace(/\/$/, "")}/opengraph.jpg`,
+    canonical,
+    type: "product",
+    noIndex: Boolean(error),
+  });
+
   useEffect(() => {
     if (product?.title) {
       trackView(product.id);
-      document.title = `${product.title} | DealHub`;
       const existing = document.getElementById("product-jsonld");
       if (existing) existing.remove();
       const script = document.createElement("script");
       script.id = "product-jsonld";
       script.type = "application/ld+json";
+      const productUrl = canonical || window.location.href.split("?")[0];
       script.text = JSON.stringify({
         "@context": "https://schema.org",
         "@type": "Product",
+        "@id": `${productUrl}#product`,
+        url: productUrl,
+        mainEntityOfPage: productUrl,
         name: product.title,
         description: product.description,
-        image: galleryImages,
+        image: galleryImages.map((image) => new URL(image, window.location.href).href),
+        category: categoryLabels[product.category] || product.category,
         offers: {
           "@type": "Offer",
-          price: product.price,
+          price: Number(product.price).toFixed(2),
           priceCurrency: "USD",
-          availability: "https://schema.org/InStock",
           url: product.affiliateUrl,
+          ...(product.storeName && {
+            seller: { "@type": "Organization", name: product.storeName },
+          }),
         },
-        ...(product.rating != null && {
-          aggregateRating: {
-            "@type": "AggregateRating",
-            ratingValue: product.rating,
-            reviewCount: product.reviewCount ?? 0,
-          },
-        }),
       });
       document.head.appendChild(script);
     }
     return () => { document.getElementById("product-jsonld")?.remove(); };
-  }, [product]);
+  }, [product, canonical]);
 
   const savingsPct = product?.originalPrice && product.originalPrice > product.price
     ? Math.round(100 - (product.price / product.originalPrice) * 100) : null;

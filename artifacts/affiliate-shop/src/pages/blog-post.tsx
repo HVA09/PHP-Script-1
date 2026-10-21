@@ -5,6 +5,7 @@ import { Badge } from "@/components/ui/badge";
 import { Button } from "@/components/ui/button";
 import { ProductCard } from "@/components/product/ProductCard";
 import { getBlogPost, BLOG_POSTS, formatBlogDate } from "@/lib/blogData";
+import { useSEO } from "@/hooks/useSEO";
 import { useListProducts, getListProductsQueryKey } from "@workspace/api-client-react";
 
 function RelatedProducts({ slugs }: { slugs: string[] }) {
@@ -34,15 +35,22 @@ function RelatedProducts({ slugs }: { slugs: string[] }) {
 export default function BlogPost() {
   const { slug } = useParams<{ slug: string }>();
   const post = getBlogPost(slug ?? "");
+  const blogRoute = `${(import.meta.env.BASE_URL || "/").replace(/\/$/, "")}/blog/${encodeURIComponent(slug ?? "")}`;
+  const canonical = typeof window === "undefined" ? undefined : new URL(blogRoute, window.location.origin).href;
+  useSEO({
+    title: post?.title ?? "Article Not Found",
+    description: post?.excerpt ?? "This article is unavailable. Browse product reviews and buying guides on DealHub.",
+    image: post?.imageUrl,
+    canonical,
+    type: "article",
+    noIndex: !post,
+  });
 
   const currentIndex = BLOG_POSTS.findIndex((p) => p.slug === slug);
   const prevPost = currentIndex > 0 ? BLOG_POSTS[currentIndex - 1] : null;
   const nextPost = currentIndex < BLOG_POSTS.length - 1 ? BLOG_POSTS[currentIndex + 1] : null;
 
   useEffect(() => {
-    if (post) {
-      document.title = `${post.title} | DealHub Blog`;
-    }
     window.scrollTo(0, 0);
   }, [post]);
 

@@ -8,6 +8,7 @@ interface SEOProps {
   canonical?: string;
   type?: "website" | "product" | "article";
   noIndex?: boolean;
+  enabled?: boolean;
 }
 
 function setMeta(nameOrProp: string, content: string, isProp = false) {
@@ -33,16 +34,23 @@ function setLink(rel: string, href: string) {
 
 export function useSEO({
   title,
-  description = "DealHub — your global affiliate marketplace for the best deals on electronics, fashion, home goods, and more.",
+  description = "Discover curated product deals, clear specifications, and retailer links across popular shopping categories with DealHub.",
   keywords,
-  image = "https://images.unsplash.com/photo-1607082348824-0a96f2a4b9da?w=1200&q=80",
+  image = `${import.meta.env.BASE_URL || "/"}opengraph.jpg`,
   canonical,
   type = "website",
   noIndex = false,
+  enabled = true,
 }: SEOProps) {
   useEffect(() => {
+    if (!enabled) return;
+
     const siteName = "DealHub";
     const fullTitle = title.includes(siteName) ? title : `${title} | ${siteName}`;
+    const canonicalUrl = canonical
+      ? new URL(canonical, window.location.href).href
+      : new URL(window.location.pathname, window.location.origin).href;
+    const imageUrl = new URL(image, window.location.href).href;
     document.title = fullTitle;
 
     setMeta("description", description);
@@ -52,17 +60,16 @@ export function useSEO({
     setMeta("og:description", description, true);
     setMeta("og:type", type, true);
     setMeta("og:site_name", siteName, true);
-    setMeta("og:image", image, true);
-    if (canonical) setMeta("og:url", canonical, true);
+    setMeta("og:image", imageUrl, true);
+    setMeta("og:image:alt", title, true);
+    setMeta("og:url", canonicalUrl, true);
 
     setMeta("twitter:card", "summary_large_image");
     setMeta("twitter:title", fullTitle);
     setMeta("twitter:description", description);
-    setMeta("twitter:image", image);
+    setMeta("twitter:image", imageUrl);
+    setMeta("twitter:image:alt", title);
     setMeta("robots", noIndex ? "noindex, nofollow" : "index, follow");
-
-    if (canonical) {
-      setLink("canonical", canonical);
-    }
-  }, [title, description, keywords, image, canonical, type, noIndex]);
+    setLink("canonical", canonicalUrl);
+  }, [title, description, keywords, image, canonical, type, noIndex, enabled]);
 }

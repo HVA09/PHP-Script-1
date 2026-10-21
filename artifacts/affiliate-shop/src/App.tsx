@@ -75,26 +75,43 @@ function GlobalSeo() {
   const isPrivate = ["/admin", "/profile", "/alerts", "/wishlist", "/compare"].some(
     (prefix) => cleanPath === prefix || cleanPath.startsWith(`${prefix}/`),
   );
+  const isProductDetail = /^\/products\/[^/]+\/?$/.test(cleanPath);
+  const isBlogPost = /^\/blog\/[^/]+\/?$/.test(cleanPath);
   const routeMeta = cleanPath === "/"
     ? {
-        title: language === "ar" ? "أفضل العروض والمنتجات | DealHub" : "Best Deals & Products | DealHub",
-        description: language === "ar" ? "اكتشف أفضل العروض المختارة على الإلكترونيات والأزياء والمنزل وأكثر مع DealHub." : "Discover curated deals on electronics, fashion, home goods, and more with DealHub.",
+        title: language === "ar" ? "أفضل عروض المنتجات | DealHub" : "Best Product Deals & Reviews",
+        description: language === "ar"
+          ? "اكتشف عروضاً مختارة على الإلكترونيات والأزياء والمنزل والرياضة والجمال والكتب، وقارن التفاصيل والأسعار عبر DealHub."
+          : "Find curated deals across electronics, fashion, home, fitness, beauty, and books. Compare product details and retailer prices with DealHub.",
       }
-    : cleanPath.startsWith("/products/")
-      ? { title: language === "ar" ? "تفاصيل المنتج | DealHub" : "Product details | DealHub", description: "Explore product details, reviews, prices, and trusted affiliate links on DealHub." }
-      : cleanPath.startsWith("/blog")
-        ? { title: language === "ar" ? "مدونة DealHub | مراجعات وأدلة الشراء" : "DealHub Blog | Reviews & Buying Guides", description: "Practical product reviews and buying guides to help you shop smarter." }
+    : isProductDetail
+      ? { title: language === "ar" ? "تفاصيل المنتج" : "Product details", description: "Explore product details, specifications, pricing, and retailer links on DealHub." }
+      : cleanPath === "/blog"
+        ? { title: language === "ar" ? "مدونة DealHub | مراجعات وأدلة الشراء" : "Product Reviews & Buying Guides", description: "Read product reviews, comparisons, and practical buying guides to help you compare features and shop with confidence." }
+        : isBlogPost
+          ? { title: language === "ar" ? "مقال من مدونة DealHub" : "DealHub article", description: "Read product reviews and practical buying advice from the DealHub editorial team." }
         : cleanPath === "/categories"
-          ? { title: language === "ar" ? "تسوق حسب التصنيف | DealHub" : "Shop by Category | DealHub", description: "Browse DealHub's curated product categories and find your next great deal." }
+          ? { title: language === "ar" ? "تسوق حسب التصنيف | DealHub" : "Shop Deals by Category", description: "Explore curated deals by category, including electronics, fashion, home, sports, beauty, and books." }
           : cleanPath === "/products"
-            ? { title: language === "ar" ? "كل العروض | DealHub" : "All Deals | DealHub", description: "Browse the latest curated products and price drops from DealHub." }
-            : { title: "DealHub", description: "DealHub is your trusted source for curated products, reviews, and better prices." };
+            ? { title: language === "ar" ? "كل العروض | DealHub" : "Curated Product Deals & Price Drops", description: "Browse curated products across electronics, fashion, home, sports, beauty, and books. Compare specifications, current prices, and available discounts." }
+            : cleanPath === "/about"
+              ? { title: language === "ar" ? "من نحن | DealHub" : "About DealHub", description: "Learn how DealHub helps shoppers discover products with useful details, category browsing, price comparisons, and direct retailer links." }
+              : cleanPath === "/contact"
+                ? { title: language === "ar" ? "اتصل بنا | DealHub" : "Contact DealHub", description: "Contact the DealHub team about products, listings, retailer links, or site feedback. Send us a message and we will get back to you." }
+                : cleanPath === "/privacy"
+                  ? { title: language === "ar" ? "سياسة الخصوصية | DealHub" : "Privacy Policy", description: "Read how DealHub handles account information, saved products, browsing activity, and data used to operate the shopping service." }
+                  : cleanPath === "/terms"
+                    ? { title: language === "ar" ? "شروط الاستخدام | DealHub" : "Terms of Use", description: "Review the terms for using DealHub, including product information, retailer links, affiliate disclosures, and service limitations." }
+                    : cleanPath === "/compare"
+                      ? { title: language === "ar" ? "مقارنة المنتجات | DealHub" : "Compare Products", description: "Compare product details, specifications, and current prices side by side on DealHub." }
+                      : { title: "DealHub — Curated Product Deals", description: "Discover curated product deals, clear specifications, and retailer links across popular shopping categories with DealHub." };
 
   const origin = typeof window === "undefined" ? "" : window.location.origin;
   const base = import.meta.env.BASE_URL || "/";
-  const canonical = `${origin}${base.replace(/\/$/, "")}${cleanPath === "/" ? "/" : cleanPath}`;
-  const image = `${origin}${base.replace(/\/$/, "")}/opengraph.jpg`;
-  useSEO({ ...routeMeta, canonical, image, noIndex: isPrivate });
+  const canonicalPath = `${base.replace(/\/$/, "")}${cleanPath === "/" ? "/" : cleanPath}`;
+  const canonical = origin ? new URL(canonicalPath, origin).href : undefined;
+  const image = `${base.replace(/\/$/, "")}/opengraph.jpg`;
+  useSEO({ ...routeMeta, canonical, image, noIndex: isPrivate, enabled: !isProductDetail && !isBlogPost });
   useEffect(() => {
     const html = document.documentElement;
     html.setAttribute("data-route", cleanPath);
